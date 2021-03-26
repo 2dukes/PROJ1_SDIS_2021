@@ -1,9 +1,8 @@
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 public class Peer {
-    private static int id;
+    private static int id = 1;
     private static String version;
     private static String accessPoint;
     private static MCChannel mcChannel;
@@ -29,45 +28,59 @@ public class Peer {
 
         storage = new PeerStorage();
 
-        File file = new File("hello.txt", 2, id);
-        storage.files = new ArrayList<>();
-        storage.addFile(file);
+        PeerFile peerFile = new PeerFile("hello.txt", 2, id);
+        storage.peerFiles.add(peerFile);
 
-        serializeStorage();
+        deserializeStorage();
+
+
+
+        // https://stackoverflow.com/questions/1611931/catching-ctrlc-in-java
+        Runtime.getRuntime().addShutdownHook(new Thread(Peer::serializeStorage));
+        // deserializeStorage();
     }
 
     public Peer() {
 
     }
 
-    public static boolean serializeStorage() {
+    public static void serializeStorage() {
         try {
-            FileOutputStream file = new FileOutputStream("peerStorage.ser");
+            String fileName = Peer.id + "/peerStorage.ser";
+
+            File f = new File(fileName);
+            if(!f.exists()) {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+            }
+
+            FileOutputStream file = new FileOutputStream(fileName);
             ObjectOutputStream out = new ObjectOutputStream(file);
             out.writeObject(storage);
             out.close();
             file.close();
-            return true;
         }
         catch(IOException e) {
             System.err.println("Exception was caught: " + e.toString());
-            return false;
         }
     }
 
-    public static boolean deserializeStorage() {
+    public static void deserializeStorage() {
         try  {
-            FileInputStream file = new FileInputStream("PeerStorage.ser");
-            ObjectInputStream in = new ObjectInputStream(file);
-            storage = (PeerStorage) in.readObject();
-            in.close();
-            file.close();
-            return true;
+            String fileName = Peer.id + "/peerStorage.ser";
+            File f = new File(fileName);
+            if(!f.exists())
+                storage = new PeerStorage();
+            else {
+                FileInputStream file = new FileInputStream(fileName);
+                ObjectInputStream in = new ObjectInputStream(file);
+                storage = (PeerStorage) in.readObject();
+                in.close();
+                file.close();
+            }
         }
-
         catch(Exception e) {
             System.err.println("Exception was caught: " + e.getMessage());
-            return false;
         }
     }
 

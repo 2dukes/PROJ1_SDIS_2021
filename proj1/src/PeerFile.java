@@ -14,24 +14,22 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class File implements Serializable {
+public class PeerFile implements Serializable {
     private String fileId;
     private int peerId;
-    private Path filePath;
     private int replicationDegree;
     private List<Chunk> chunks;
 
-    public File(String path, int replicationDegree, int peerId) throws IOException, NoSuchAlgorithmException  {
+    public PeerFile(String path, int replicationDegree, int peerId) throws IOException, NoSuchAlgorithmException  {
         this.replicationDegree = replicationDegree;
         this.peerId = peerId;
         Path fPath = Paths.get(path);
-        this.filePath = fPath;
         UserPrincipal fileOwner = Files.getOwner(fPath, LinkOption.NOFOLLOW_LINKS);
         this.fileId = fPath.getFileName().toString();
         long lastModifiedMs = fPath.toFile().lastModified();
 
-        this.createIdentifier(filePath.getFileName().toString(), fileOwner.getName(), new Date(lastModifiedMs));
-        this.createChunks();
+        this.createIdentifier(fPath.getFileName().toString(), fileOwner.getName(), new Date(lastModifiedMs));
+        this.createChunks(fPath);
     }
 
     // https://www.geeksforgeeks.org/sha-256-hash-in-java/
@@ -51,10 +49,6 @@ public class File implements Serializable {
     public String getId() {
         return this.fileId;
     }
-    
-    public Path getFilePath() {
-        return this.filePath;
-    }
 
     public int getReplicationDegree() {
         return this.replicationDegree;
@@ -64,11 +58,11 @@ public class File implements Serializable {
         return this.chunks;
     }
 
-    public void createChunks() throws IOException {
+    public void createChunks(Path filePath) throws IOException {
         this.chunks = new ArrayList<>();
         byte[] fileData;
-        fileData = Files.readAllBytes(this.filePath);
-        int fileSize = (int) Files.size(this.filePath);
+        fileData = Files.readAllBytes(filePath);
+        int fileSize = (int) Files.size(filePath);
 
         int i, chunkNo = 0, chunkSize = 64000;
 
