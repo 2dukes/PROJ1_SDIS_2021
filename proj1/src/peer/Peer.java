@@ -34,7 +34,7 @@ public class Peer {
 
         storage = new PeerStorage();
 
-        PeerFile peerFile = new PeerFile("hello.txt", 2, id);
+        PeerFile peerFile = new PeerFile("src/files/hello.txt", 2, id);
         storage.peerFiles.add(peerFile);
 
         deserializeStorage();
@@ -52,7 +52,7 @@ public class Peer {
 
     public static void serializeStorage() {
         try {
-            String fileName = Peer.id + "/peerStorage.ser";
+            String fileName = "src/files/" + Peer.id + "/peerStorage.ser";
 
             File f = new File(fileName);
             if(!f.exists()) {
@@ -73,7 +73,7 @@ public class Peer {
 
     public static void deserializeStorage() {
         try  {
-            String fileName = Peer.id + "/peerStorage.ser";
+            String fileName = "src/files/" + Peer.id + "/peerStorage.ser";
             File f = new File(fileName);
             if(!f.exists())
                 storage = new PeerStorage();
