@@ -1,14 +1,20 @@
+package peer;
+
+import channels.MCChannel;
+import channels.MDBChannel;
+import channels.MDRChannel;
+
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 
 public class Peer {
-    private static int id = 1;
-    private static String version;
-    private static String accessPoint;
-    private static MCChannel mcChannel;
-    private static MDBChannel mdbChannel;
-    private static MDRChannel mdrChannel;
-    private static PeerStorage storage;
+    public static int id = 1;
+    public static String version;
+    public static String accessPoint;
+    public static MCChannel mcChannel;
+    public static MDBChannel mdbChannel;
+    public static MDRChannel mdrChannel;
+    public static PeerStorage storage;
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
         /*if (args.length != 9) {

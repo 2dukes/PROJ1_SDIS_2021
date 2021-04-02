@@ -1,8 +1,10 @@
-public class MDBChannel {
+package channels;
+
+public class MDRChannel {
     private String IP;
     private int port;
 
-    public MDBChannel(String IP, int port) {
+    public MDRChannel(String IP, int port) {
         this.IP = IP;
         this.port = port;
     }

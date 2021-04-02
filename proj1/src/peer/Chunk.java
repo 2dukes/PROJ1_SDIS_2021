@@ -1,10 +1,11 @@
+package peer;
+
 import java.io.Serializable;
 
 public class Chunk implements Serializable {
     private String fileId;
     private int chunkNo;
     private byte[] data;
-    private int replicationDegree;
     private int desiredReplicationDegree;
     private int currentReplicationDegree;
 
@@ -27,8 +28,8 @@ public class Chunk implements Serializable {
         return this.data;
     }
 
-    public int getReplicationDegree() {
-        return this.replicationDegree;
+    public int getCurrentReplicationDegree() {
+        return this.currentReplicationDegree;
     }
 
     public void setCurrentReplicationDegree(int replicationDegree) {
