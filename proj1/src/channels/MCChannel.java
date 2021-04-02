@@ -43,7 +43,7 @@ public class MCChannel implements Runnable {
                 // ...
                 break;
             case "STORED":
-                // ...
+                System.out.println("Received stored!!!");
                 break;
             default:
                 System.err.println("MC Channel message type error:" + msgType);
@@ -55,14 +55,17 @@ public class MCChannel implements Runnable {
         byte[] inbuf = new byte[70000];
 
         try {
-            MulticastSocket multicastSocket = new MulticastSocket(this.port);
+            MulticastSocket multicastSocket = new MulticastSocket(this.port); // TODO: fix bug permission denied
             multicastSocket.joinGroup(this.destination);
+
             // NetworkInterface netInterface = NetworkInterface.getByName("wlp2s0");
             // SocketAddress sockAdr = new InetSocketAddress(this.IP, this.port);
             //multicastSocket.joinGroup(sockAdr, netInterface);
             while(true) {
                 DatagramPacket packet = new DatagramPacket(inbuf, inbuf.length);
                 multicastSocket.receive(packet);
+
+                handleMessageType(packet.getData());
 
                 // Executors.newScheduledThreadPool(150).execute(new MessageManagerBackup(packet.getData()));
             }

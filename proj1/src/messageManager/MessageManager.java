@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import macros.Macros;
+
 public abstract class MessageManager implements Runnable {
     protected byte[] data;
-    protected final byte CR = 0x0D;
-    protected final byte LF = 0x0A;
 
     protected String[] header;
     protected byte[] body;
@@ -30,7 +30,7 @@ public abstract class MessageManager implements Runnable {
         byte nextByte = data[1];
         int index = 2;
         while(index < data.length) {
-            if(currentByte == CR && nextByte == LF && data[index + 2] == CR && data[index + 3] == LF) {
+            if(currentByte == Macros.CR && nextByte == Macros.LF && data[index + 2] == Macros.CR && data[index + 3] == Macros.LF) {
                 Map<String, byte[]> message = new HashMap<>();
                 byte[] headerBytes = Arrays.copyOfRange(data, 0, index);
                 this.body = Arrays.copyOfRange(data, index + 4, data.length);

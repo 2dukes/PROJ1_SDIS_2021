@@ -3,9 +3,14 @@ package peer;
 import channels.MCChannel;
 import channels.MDBChannel;
 import channels.MDRChannel;
+import macros.Macros;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class Peer {
     public static int id = 1;
@@ -17,7 +22,7 @@ public class Peer {
     public static PeerStorage storage;
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        /*if (args.length != 9) {
+        if (args.length != 9) {
             System.err.println("Usage: java Peer <id> <version> <access point> <IP-MC> <Port-MC> <IP-MDB> <Port-MDB> <IP-MDR> <Port-MDR>");
             return;
         }
@@ -30,7 +35,7 @@ public class Peer {
             mdrChannel = new MDRChannel(args[7], Integer.parseInt(args[8]));
         } catch (Exception e) {
             System.err.println("Bad arguments usage: " + e.getMessage());
-        }*/
+        }
 
         storage = new PeerStorage();
 
@@ -39,11 +44,37 @@ public class Peer {
 
         deserializeStorage();
 
-
-
         // https://stackoverflow.com/questions/1611931/catching-ctrlc-in-java
         Runtime.getRuntime().addShutdownHook(new Thread(Peer::serializeStorage));
         // deserializeStorage();
+
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Please enter the filepath: ");
+        String filepath = scanner.nextLine();
+
+        System.out.print("Please enter the desired replication degree: ");
+        int replicationDegree = scanner.nextInt();
+
+        PeerFile peerFile1 = new PeerFile(filepath, replicationDegree, Peer.id);
+
+        Peer.storage.addFile(peerFile1);
+
+        Chunk chunk = storage.getChunks().get(0);
+
+        String messageStr = "1.0 PUTCHUNK 1 jhflsdrohjfdserk7934nfkhkuf0xjodiede$joifer 1 2" + Macros.CR + Macros.LF + Macros.CR + Macros.LF;
+
+        byte[] header = messageStr.getBytes();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        outputStream.write(header);
+        outputStream.write(chunk.getData());
+
+        byte[] message = outputStream.toByteArray();
+
+        mcChannel.send(message);
+
+        mcChannel.run();
     }
 
     public Peer() {

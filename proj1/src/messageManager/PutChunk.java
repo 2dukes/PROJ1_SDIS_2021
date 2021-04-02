@@ -26,23 +26,27 @@ public class PutChunk extends MessageManager {
     public synchronized void run() {
         String chunkOccurrencesKey = this.fileId + " " + this.chunkNo;
 
-        if(!Peer.storage.getChunkOccurrences().contains(chunkOccurrencesKey)) { // Insert new chunk occurrence
-            Peer.storage.getChunkOccurrences().add(chunkOccurrencesKey);
-        }
-
         if(Peer.id != this.senderId) { // A peer can't send a chunk to itself
             // if(Peer.storage.getChunkOccurrences().get(chunkOccurrencesKey) >= this.replicationDeg)
             //    return;
 
+            if(Peer.storage.getChunksStored().contains(chunkOccurrencesKey))
+                return;
+
             if(Peer.storage.getAvailableStorage() >= body.length) {
+                Peer.storage.getChunksStored().add(chunkOccurrencesKey);
+
                 peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, body, this.replicationDeg);
 
+                Peer.storage.putChunk(chunk);
+                Peer.storage.updateAvailableStorage(body.length);
+
+                System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
+                        this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
+                Executors.newScheduledThreadPool(150).schedule(new SendStored(this.version, this.fileId, this.chunkNo),
+                        new Random().nextInt(401), TimeUnit.MILLISECONDS);
             }
 
-            System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
-                    this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
-            Executors.newScheduledThreadPool(150).schedule(new SendStored(this.version, this.fileId, this.chunkNo),
-                    new Random().nextInt(401), TimeUnit.MILLISECONDS);
         }
 
 

@@ -11,30 +11,29 @@ public class PeerStorage implements Serializable {
 
     // Key: fileId chunkNo
     // Value: Number of times the chunk was stored
-    private Set<String> chunkOccurrences;
+    private Set<String> chunksStored;
 
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
         this.chunks = new ArrayList<>();
-        this.chunkOccurrences = new HashSet<String>();
+        this.chunksStored = new HashSet<>();
     }
 
     public void addFile(PeerFile peerFile) {
+        this.chunks.addAll(peerFile.getChunks());
         this.peerFiles.add(peerFile);
     }
 
-    public synchronized void updateChunks() {
-        for (int i = 0; i < this.peerFiles.size(); i++) {
-            this.chunks.addAll(this.peerFiles.get(i).getChunks());
-        }
+    public void putChunk(Chunk chunk) {
+        this.chunks.add(chunk);
     }
 
     public int getAvailableStorage() {
         return availableStorage;
     }
 
-    public Set<String> getChunkOccurrences() {
-        return chunkOccurrences;
+    public Set<String> getChunksStored() {
+        return chunksStored;
     }
 
     public ArrayList<PeerFile> getPeerFiles() {
@@ -43,5 +42,9 @@ public class PeerStorage implements Serializable {
 
     public ArrayList<Chunk> getChunks() {
         return chunks;
+    }
+
+    public void updateAvailableStorage(int chunkSize) {
+        this.availableStorage -= chunkSize;
     }
 }
