@@ -3,22 +3,19 @@ package peer;
 import channels.MCChannel;
 import channels.MDBChannel;
 import channels.MDRChannel;
-import macros.Macros;
 
 import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLOutput;
-import java.util.Scanner;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 
 public class Peer implements RMIService {
     public static int id = 1;
@@ -121,23 +118,24 @@ public class Peer implements RMIService {
         }
     }
 
-    public void backup(String path, int replicationDeg) throws IOException, NoSuchAlgorithmException {
+    public void backup(String path, int replicationDeg) throws IOException, NoSuchAlgorithmException, RemoteException {
         System.out.println("Entered backup function! :)");
 
         PeerFile peerFile = new PeerFile(path, replicationDeg, Peer.id);
-        Peer.storage.addFile(peerFile);
+        List<Chunk> fileChunks = Peer.storage.addFile(peerFile);
+        System.out.println("Length: " + fileChunks.size());
+        for(int i = 0; i < fileChunks.size(); i++) {
+            Chunk chunk = storage.getChunks().get(i);
+            String messageStr = "1.0 PUTCHUNK " + (id + 1) + " " + peerFile.getId() + " " + (i + 1)+ " " + replicationDeg + "\r\n\r\n"; // HardCoded ID
 
-        Chunk chunk = storage.getChunks().get(0);
-        String messageStr = "1.0 PUTCHUNK 1 jhflsdrohjfdserk7934nfkhkuf0xjodiede$joifer 1 2 \r\n\r\n";
+            byte[] header = messageStr.getBytes();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream.write(header);
+            outputStream.write(chunk.getData());
 
-        byte[] header = messageStr.getBytes();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(header);
-        outputStream.write(chunk.getData());
-
-        byte[] message = outputStream.toByteArray();
-//        Thread.sleep(500);
-        mdbChannel.send(message);
+            byte[] message = outputStream.toByteArray();
+            mdbChannel.send(message);
+        }
     }
 
 }

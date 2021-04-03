@@ -19,9 +19,10 @@ public class PeerStorage implements Serializable {
         this.chunksStored = new HashSet<>();
     }
 
-    public void addFile(PeerFile peerFile) {
+    public List<Chunk> addFile(PeerFile peerFile) {
         this.chunks.addAll(peerFile.getChunks());
         this.peerFiles.add(peerFile);
+        return peerFile.getChunks();
     }
 
     public void putChunk(Chunk chunk) {

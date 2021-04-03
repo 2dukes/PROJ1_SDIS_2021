@@ -1,12 +1,8 @@
 package client;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.security.NoSuchAlgorithmException;
-import java.util.Scanner;
 
 import peer.*;
 
