@@ -40,7 +40,7 @@ public abstract class MessageManager implements Runnable {
         byte currentByte = data[0];
         byte nextByte = data[1];
         int index = 2;
-        while(index < data.length) {
+        while(index < data.length - 2) {
 
             if(currentByte == Macros.CR && nextByte == Macros.LF && data[index + 1] == Macros.CR && data[index + 2] == Macros.LF) {
                 byte[] headerBytes = Arrays.copyOfRange(data, 0, index);

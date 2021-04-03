@@ -14,6 +14,7 @@ public class Chunk implements Serializable {
         this.chunkNo = chunkNo;
         this.data = data;
         this.desiredReplicationDegree = desiredReplicationDegree;
+        this.currentReplicationDegree = 0;
     }
 
     public String getFileId() {
@@ -28,12 +29,19 @@ public class Chunk implements Serializable {
         return this.data;
     }
 
+    public void incrementCurrentReplicationDegree() {
+        this.currentReplicationDegree++;
+    }
+
+    public void decrementCurrentReplicationDegree() {
+        this.currentReplicationDegree--;
+    }
+
     public int getCurrentReplicationDegree() {
         return this.currentReplicationDegree;
     }
 
-    public void setCurrentReplicationDegree(int replicationDegree) {
-        this.currentReplicationDegree = replicationDegree;
+    public int getDesiredReplicationDegree() {
+        return desiredReplicationDegree;
     }
-
 }

@@ -26,20 +26,17 @@ public class PutChunk extends MessageManager {
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         /*System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                 this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);*/
 
         if(Peer.id != this.senderId) { // A peer can't send a chunk to itself
             // if(Peer.storage.getChunkOccurrences().get(chunkOccurrencesKey) >= this.replicationDeg)
             //    return;
-            /*System.out.println("Well...\n");
-            System.out.println("Key: " + chunkKey);
-            System.out.println("Storage size: " + Peer.storage.getChunks().size());*/
-            
+
             if(Peer.storage.getChunks().containsKey(chunkKey))
                 return;
-            System.out.println("Passed\n");
+
             if(Peer.storage.getAvailableStorage() >= body.length) {
                 peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, body, this.replicationDeg);
 

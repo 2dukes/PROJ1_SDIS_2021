@@ -37,12 +37,10 @@ public class MDBChannel implements Runnable {
         }
     }
 
-    // [version ] [   PUTCHUNK] ...
     public void handleMessageType(byte[] data) {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "PUTCHUNK":
-                System.out.println("My new peer got a new candy!");
                 Executors.newScheduledThreadPool(150).execute(new PutChunk(data));
                 break;
             default:
@@ -57,6 +55,7 @@ public class MDBChannel implements Runnable {
         try {
             MulticastSocket multicastSocket = new MulticastSocket(this.port);
             multicastSocket.joinGroup(this.destination);
+
             // NetworkInterface netInterface = NetworkInterface.getByName("wlp2s0");
             // SocketAddress sockAdr = new InetSocketAddress(this.IP, this.port);
             //multicastSocket.joinGroup(sockAdr, netInterface);

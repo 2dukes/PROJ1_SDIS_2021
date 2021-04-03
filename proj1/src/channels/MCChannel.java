@@ -1,8 +1,12 @@
 package channels;
 
+import messageManager.PutChunk;
+import messageManager.Stored;
+
 import java.io.IOException;
 import java.net.*;
 import java.sql.SQLOutput;
+import java.util.concurrent.Executors;
 
 public class MCChannel implements Runnable {
     private DatagramSocket socket;
@@ -44,7 +48,7 @@ public class MCChannel implements Runnable {
                 // ...
                 break;
             case "STORED":
-                System.out.println("Received stored!!!");
+                Executors.newScheduledThreadPool(150).execute(new Stored(data));
                 break;
             default:
                 System.err.println("MC Channel message type error:" + msgType);
@@ -66,10 +70,10 @@ public class MCChannel implements Runnable {
                 DatagramPacket packet = new DatagramPacket(inbuf, inbuf.length);
                 multicastSocket.receive(packet);
 
-               /* System.out.println(packet);
-                System.out.println(packet.getLength());*/
+                byte[] data = new byte[packet.getLength()];
+                System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
 
-                handleMessageType(packet.getData());
+                handleMessageType(data);
 
                 // Executors.newScheduledThreadPool(150).execute(new MessageManagerBackup(packet.getData()));
             }

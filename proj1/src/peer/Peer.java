@@ -15,10 +15,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Peer implements RMIService {
-    public static int id = 1;
+    public static int id;
     public static String version;
     public static String accessPoint;
     public static MCChannel mcChannel;
@@ -38,7 +40,8 @@ public class Peer implements RMIService {
             return;
         }
         try {
-            id = Integer.parseInt(args[0]);
+            // id = Integer.parseInt(args[0]);
+            id = new Random().nextInt(100000000);
             version = args[1];
             accessPoint = args[2];
 
@@ -75,7 +78,9 @@ public class Peer implements RMIService {
 //        Peer.storage.addFile(peerFile1);
 
         Executors.newScheduledThreadPool(150).execute(mdbChannel);
+        Executors.newScheduledThreadPool(150).execute(mcChannel);
         System.out.print("Hello :)");
+        System.out.println("My id: " + id);
     }
 
     public static void serializeStorage() {
@@ -122,11 +127,13 @@ public class Peer implements RMIService {
         System.out.println("Entered backup function! :)");
 
         PeerFile peerFile = new PeerFile(path, replicationDeg, Peer.id);
-        List<Chunk> fileChunks = Peer.storage.addFile(peerFile);
-        System.out.println("Length: " + fileChunks.size());
+        List<Chunk> fileChunks = peerFile.getChunks();
+        Peer.storage.addFile(peerFile);
+
         for(int i = 0; i < fileChunks.size(); i++) {
             Chunk chunk = fileChunks.get(i);
-            String messageStr = "1.0 PUTCHUNK " + (id + 1) + " " + peerFile.getId() + " " + (i + 1)+ " " + replicationDeg + "\r\n\r\n"; // HardCoded ID
+            int chunkNo = i + 1;
+            String messageStr = "1.0 PUTCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + " " + replicationDeg + "\r\n\r\n"; // HardCoded ID
 
             byte[] header = messageStr.getBytes();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -134,8 +141,11 @@ public class Peer implements RMIService {
             outputStream.write(chunk.getData());
 
             byte[] message = outputStream.toByteArray();
+
             System.out.println(messageStr);
             mdbChannel.send(message);
+            Executors.newScheduledThreadPool(150).schedule(new manageThreads.PutChunk(message,
+                    peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
     }
 

@@ -19,10 +19,10 @@ public class SendStored implements Runnable {
     @Override
     public void run() {
         System.out.format("SENT STORED version=%s senderId=%s fileId=%s chunkNo=%s \n",
-                this.version, this.senderId, this.fileId, this.chunkNo);
+                this.version, Peer.id, this.fileId, this.chunkNo);
 
-        String messageStr = this.version + " STORED " + this.senderId + " " + this.fileId + " "
-                + this.chunkNo + Macros.CR + Macros.LF + Macros.CR + Macros.LF;
+        String messageStr = this.version + " STORED " + Peer.id + " " + this.fileId + " "
+                + this.chunkNo + "\r\n\r\n";
 
         byte[] message = messageStr.getBytes();
 
