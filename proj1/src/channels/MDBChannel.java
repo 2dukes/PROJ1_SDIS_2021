@@ -42,6 +42,7 @@ public class MDBChannel implements Runnable {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "PUTCHUNK":
+                System.out.println("My new peer got a new candy!");
                 Executors.newScheduledThreadPool(150).execute(new PutChunk(data));
                 break;
             default:

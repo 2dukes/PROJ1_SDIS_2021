@@ -7,41 +7,39 @@ public class PeerStorage implements Serializable {
     public ArrayList<PeerFile> peerFiles;
     private int availableStorage = (int) (5*Math.pow(10,9)); // ~ 5 GBytes
 
-    private ArrayList<Chunk> chunks;
-
     // Key: fileId chunkNo
     // Value: Number of times the chunk was stored
-    private Set<String> chunksStored;
+    private Map<String, Chunk> chunks;
 
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
-        this.chunks = new ArrayList<>();
-        this.chunksStored = new HashSet<>();
+        this.chunks = new HashMap<>();
     }
 
     public List<Chunk> addFile(PeerFile peerFile) {
-        this.chunks.addAll(peerFile.getChunks());
+        List<Chunk> fileChunks = peerFile.getChunks();
+        for (int i = 0; i < fileChunks.size(); i++) {
+            String key = fileChunks.get(i).getFileId() + " " + fileChunks.get(i).getChunkNo();
+            this.chunks.put(key, fileChunks.get(i));
+        }
         this.peerFiles.add(peerFile);
-        return peerFile.getChunks();
+        return fileChunks;
     }
 
     public void putChunk(Chunk chunk) {
-        this.chunks.add(chunk);
+        String key = chunk.getFileId() + " " + chunk.getChunkNo();
+        this.chunks.put(key, chunk);
     }
 
     public int getAvailableStorage() {
         return availableStorage;
     }
 
-    public Set<String> getChunksStored() {
-        return chunksStored;
-    }
-
     public ArrayList<PeerFile> getPeerFiles() {
         return peerFiles;
     }
 
-    public ArrayList<Chunk> getChunks() {
+    public Map<String, Chunk> getChunks() {
         return chunks;
     }
 

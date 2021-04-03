@@ -125,7 +125,7 @@ public class Peer implements RMIService {
         List<Chunk> fileChunks = Peer.storage.addFile(peerFile);
         System.out.println("Length: " + fileChunks.size());
         for(int i = 0; i < fileChunks.size(); i++) {
-            Chunk chunk = storage.getChunks().get(i);
+            Chunk chunk = fileChunks.get(i);
             String messageStr = "1.0 PUTCHUNK " + (id + 1) + " " + peerFile.getId() + " " + (i + 1)+ " " + replicationDeg + "\r\n\r\n"; // HardCoded ID
 
             byte[] header = messageStr.getBytes();
@@ -134,6 +134,7 @@ public class Peer implements RMIService {
             outputStream.write(chunk.getData());
 
             byte[] message = outputStream.toByteArray();
+            System.out.println(messageStr);
             mdbChannel.send(message);
         }
     }

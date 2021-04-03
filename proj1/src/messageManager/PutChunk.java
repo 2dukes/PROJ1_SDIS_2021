@@ -15,7 +15,7 @@ public class PutChunk extends MessageManager {
 
     public PutChunk(byte[] data) {
         super(data);
-        chunkKey = this.fileId + " " + this.chunkNo;
+        this.chunkKey = this.fileId + " " + this.chunkNo;
     }
 
     // <Version> PUTCHUNK <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
@@ -33,13 +33,14 @@ public class PutChunk extends MessageManager {
         if(Peer.id != this.senderId) { // A peer can't send a chunk to itself
             // if(Peer.storage.getChunkOccurrences().get(chunkOccurrencesKey) >= this.replicationDeg)
             //    return;
-
-            if(Peer.storage.getChunksStored().contains(chunkKey))
+            /*System.out.println("Well...\n");
+            System.out.println("Key: " + chunkKey);
+            System.out.println("Storage size: " + Peer.storage.getChunks().size());*/
+            
+            if(Peer.storage.getChunks().containsKey(chunkKey))
                 return;
-
+            System.out.println("Passed\n");
             if(Peer.storage.getAvailableStorage() >= body.length) {
-                Peer.storage.getChunksStored().add(chunkKey);
-
                 peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, body, this.replicationDeg);
 
                 Peer.storage.putChunk(chunk);
@@ -54,8 +55,6 @@ public class PutChunk extends MessageManager {
             }
 
         }
-
-
     }
 
     public int getChunkNo() {
