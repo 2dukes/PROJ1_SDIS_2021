@@ -1,7 +1,7 @@
 package messageManager;
 
 public class Stored extends MessageManager {
-    public Stored(byte[] data) {
+    public Stored(byte[] data) throws Exception {
         super(data);
     }
 

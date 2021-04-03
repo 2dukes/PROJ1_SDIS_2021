@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class Peer {
@@ -21,7 +22,7 @@ public class Peer {
     public static MDRChannel mdrChannel;
     public static PeerStorage storage;
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InterruptedException {
         if (args.length != 9) {
             System.err.println("Usage: java Peer <id> <version> <access point> <IP-MC> <Port-MC> <IP-MDB> <Port-MDB> <IP-MDR> <Port-MDR>");
             return;
@@ -42,10 +43,10 @@ public class Peer {
         PeerFile peerFile = new PeerFile("src/files/hello.txt", 2, id);
         storage.peerFiles.add(peerFile);
 
-        deserializeStorage();
+        //deserializeStorage();
 
         // https://stackoverflow.com/questions/1611931/catching-ctrlc-in-java
-        Runtime.getRuntime().addShutdownHook(new Thread(Peer::serializeStorage));
+        //Runtime.getRuntime().addShutdownHook(new Thread(Peer::serializeStorage));
         // deserializeStorage();
 
 
@@ -62,7 +63,7 @@ public class Peer {
 
         Chunk chunk = storage.getChunks().get(0);
 
-        String messageStr = "1.0 PUTCHUNK 1 jhflsdrohjfdserk7934nfkhkuf0xjodiede$joifer 1 2" + Macros.CR + Macros.LF + Macros.CR + Macros.LF;
+        String messageStr = "1.0 PUTCHUNK 1 jhflsdrohjfdserk7934nfkhkuf0xjodiede$joifer 1 2 \r\n\r\n";
 
         byte[] header = messageStr.getBytes();
 
@@ -72,9 +73,12 @@ public class Peer {
 
         byte[] message = outputStream.toByteArray();
 
-        mcChannel.send(message);
+        Executors.newScheduledThreadPool(150).execute(mdbChannel);
 
-        mcChannel.run();
+        Thread.sleep(500);
+
+        mdbChannel.send(message);
+
     }
 
     public Peer() {

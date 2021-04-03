@@ -7,6 +7,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 public class MDBChannel implements Runnable {
@@ -60,6 +62,11 @@ public class MDBChannel implements Runnable {
             while(true) {
                 DatagramPacket packet = new DatagramPacket(inbuf, inbuf.length);
                 multicastSocket.receive(packet);
+
+                byte[] data = new byte[packet.getLength()];
+                System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
+
+                handleMessageType(data);
 
                 // Executors.newScheduledThreadPool(150).execute(new MessageManagerBackup(packet.getData()));
             }

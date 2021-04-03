@@ -1,10 +1,15 @@
 package messageManager;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import macros.Macros;
+import peer.Peer;
 
 public abstract class MessageManager implements Runnable {
     protected byte[] data;
@@ -17,6 +22,12 @@ public abstract class MessageManager implements Runnable {
 
     public MessageManager(byte[] data) {
         this.data = data;
+        try {
+            parseMessage(this.data);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
         parseCommonParameters();
         parseSpecificParameters();
     }
@@ -30,10 +41,10 @@ public abstract class MessageManager implements Runnable {
         byte nextByte = data[1];
         int index = 2;
         while(index < data.length) {
-            if(currentByte == Macros.CR && nextByte == Macros.LF && data[index + 2] == Macros.CR && data[index + 3] == Macros.LF) {
-                Map<String, byte[]> message = new HashMap<>();
+
+            if(currentByte == Macros.CR && nextByte == Macros.LF && data[index + 1] == Macros.CR && data[index + 2] == Macros.LF) {
                 byte[] headerBytes = Arrays.copyOfRange(data, 0, index);
-                this.body = Arrays.copyOfRange(data, index + 4, data.length);
+                this.body = Arrays.copyOfRange(data, index + 3, data.length);
                 this.header = new String(headerBytes).trim().split("\\s+");
 
                 if(this.header.length < 4)

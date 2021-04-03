@@ -2,6 +2,7 @@ package channels;
 
 import java.io.IOException;
 import java.net.*;
+import java.sql.SQLOutput;
 
 public class MCChannel implements Runnable {
     private DatagramSocket socket;
@@ -64,6 +65,9 @@ public class MCChannel implements Runnable {
             while(true) {
                 DatagramPacket packet = new DatagramPacket(inbuf, inbuf.length);
                 multicastSocket.receive(packet);
+
+               /* System.out.println(packet);
+                System.out.println(packet.getLength());*/
 
                 handleMessageType(packet.getData());
 
