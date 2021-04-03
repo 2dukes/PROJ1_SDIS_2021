@@ -79,7 +79,7 @@ public class PutChunk extends MessageManager {
             System.out.println("Creating file....");
 
             FileOutputStream file = new FileOutputStream(fileName);
-            System.out.println(data.length);
+//          System.out.println(data.length);
             file.write(data, 0, data.length);
             file.close();
 

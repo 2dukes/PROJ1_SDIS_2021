@@ -60,6 +60,7 @@ public class MDBChannel implements Runnable {
             // SocketAddress sockAdr = new InetSocketAddress(this.IP, this.port);
             //multicastSocket.joinGroup(sockAdr, netInterface);
             while(true) {
+
                 DatagramPacket packet = new DatagramPacket(inbuf, inbuf.length);
                 multicastSocket.receive(packet);
 
@@ -67,7 +68,6 @@ public class MDBChannel implements Runnable {
                 System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
 
                 handleMessageType(data);
-
                 // Executors.newScheduledThreadPool(150).execute(new MessageManagerBackup(packet.getData()));
             }
 

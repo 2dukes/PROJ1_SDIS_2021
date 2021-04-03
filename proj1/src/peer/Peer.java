@@ -6,14 +6,21 @@ import channels.MDRChannel;
 import macros.Macros;
 
 import java.io.*;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.rmi.Remote;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
-public class Peer {
+public class Peer implements RMIService {
     public static int id = 1;
     public static String version;
     public static String accessPoint;
@@ -21,6 +28,12 @@ public class Peer {
     public static MDBChannel mdbChannel;
     public static MDRChannel mdrChannel;
     public static PeerStorage storage;
+
+    public Peer(String IP_MC, int PORT_MC, String IP_MDB, int PORT_MDB, String IP_MDR, int PORT_MDR) throws SocketException, UnknownHostException {
+        mcChannel = new MCChannel(IP_MC, PORT_MC);
+        mdbChannel = new MDBChannel(IP_MDB, PORT_MDB);
+        mdrChannel = new MDRChannel(IP_MDR, PORT_MDR);
+    }
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InterruptedException {
         if (args.length != 9) {
@@ -31,17 +44,20 @@ public class Peer {
             id = Integer.parseInt(args[0]);
             version = args[1];
             accessPoint = args[2];
-            mcChannel = new MCChannel(args[3], Integer.parseInt(args[4]));
-            mdbChannel = new MDBChannel(args[5], Integer.parseInt(args[6]));
-            mdrChannel = new MDRChannel(args[7], Integer.parseInt(args[8]));
+
+            Remote obj = new Peer(args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]));
+            RMIService stub = (RMIService) UnicastRemoteObject.exportObject(obj, 0);
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind(accessPoint, stub);
+
         } catch (Exception e) {
             System.err.println("Bad arguments usage: " + e.getMessage());
         }
 
         storage = new PeerStorage();
 
-        PeerFile peerFile = new PeerFile("src/files/hello.txt", 2, id);
-        storage.peerFiles.add(peerFile);
+//        PeerFile peerFile = new PeerFile("src/files/hello.txt", 2, id);
+//        storage.peerFiles.add(peerFile);
 
         //deserializeStorage();
 
@@ -50,39 +66,19 @@ public class Peer {
         // deserializeStorage();
 
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Please enter the filepath: ");
-        String filepath = scanner.nextLine();
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.print("Please enter the filepath: ");
+//        String filepath = scanner.nextLine();
+//
+//        System.out.print("Please enter the desired replication degree: ");
+//        int replicationDegree = scanner.nextInt();
 
-        System.out.print("Please enter the desired replication degree: ");
-        int replicationDegree = scanner.nextInt();
-
-        PeerFile peerFile1 = new PeerFile(filepath, replicationDegree, Peer.id);
-
-        Peer.storage.addFile(peerFile1);
-
-        Chunk chunk = storage.getChunks().get(0);
-
-        String messageStr = "1.0 PUTCHUNK 1 jhflsdrohjfdserk7934nfkhkuf0xjodiede$joifer 1 2 \r\n\r\n";
-
-        byte[] header = messageStr.getBytes();
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(header);
-        outputStream.write(chunk.getData());
-
-        byte[] message = outputStream.toByteArray();
+//        PeerFile peerFile1 = new PeerFile(filepath, replicationDegree, Peer.id);
+//
+//        Peer.storage.addFile(peerFile1);
 
         Executors.newScheduledThreadPool(150).execute(mdbChannel);
-
-        Thread.sleep(500);
-
-        mdbChannel.send(message);
-
-    }
-
-    public Peer() {
-
+        System.out.print("Hello :)");
     }
 
     public static void serializeStorage() {
@@ -125,5 +121,23 @@ public class Peer {
         }
     }
 
+    public void backup(String path, int replicationDeg) throws IOException, NoSuchAlgorithmException {
+        System.out.println("Entered backup function! :)");
+
+        PeerFile peerFile = new PeerFile(path, replicationDeg, Peer.id);
+        Peer.storage.addFile(peerFile);
+
+        Chunk chunk = storage.getChunks().get(0);
+        String messageStr = "1.0 PUTCHUNK 1 jhflsdrohjfdserk7934nfkhkuf0xjodiede$joifer 1 2 \r\n\r\n";
+
+        byte[] header = messageStr.getBytes();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        outputStream.write(header);
+        outputStream.write(chunk.getData());
+
+        byte[] message = outputStream.toByteArray();
+//        Thread.sleep(500);
+        mdbChannel.send(message);
+    }
 
 }
