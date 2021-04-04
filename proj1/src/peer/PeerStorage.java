@@ -1,5 +1,6 @@
 package peer;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +39,12 @@ public class PeerStorage implements Serializable {
         return chunks;
     }
 
-    public synchronized void updateAvailableStorage(int chunkSize) {
+    public synchronized void decreaseAvailableStorage(int chunkSize) {
         this.availableStorage -= chunkSize;
+    }
+
+    public synchronized void increaseAvailableStorage(int chunkSize) {
+        this.availableStorage += chunkSize;
     }
 
     public synchronized void incrementChunkReplicationDeg(String key) {
@@ -97,5 +102,33 @@ public class PeerStorage implements Serializable {
             System.out.format("Chunk [fileId=%s | chunkNo=%d] not present in peer.", fileId, chunkNo);
     }
 
+    public void deleteFileChunks(String fileId) {
+        try {
+            for (String key : this.chunks.keySet()) {
+                String id = this.chunks.get(key).getFileId();
+                if (id.equals(fileId)) {
+                    this.chunks.remove(id);
+                    deleteChunkFile(key);
+                    increaseAvailableStorage(this.chunks.get(key).getData().length);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
 
+    public void deleteChunkFile(String key) throws Exception {
+        File file = new File("src/files/chunks/" + Peer.id + "/" + key + ".txt");
+        if (!file.delete()) {
+            throw new Exception("Error deleting chunk file with key = " + key);
+        }
+    }
+
+    public String getFileIdByPath(String path) throws Exception {
+        for (int i = 0; i < this.peerFiles.size(); i++) {
+            if (this.peerFiles.get(i).getPath().equals(path))
+                return this.peerFiles.get(i).getId();
+        }
+        throw new Exception("Could not find the file with path " + path);
+    }
 }

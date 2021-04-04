@@ -1,13 +1,12 @@
 package client;
 
-import java.rmi.RemoteException;
+import peer.RMIService;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import peer.*;
-
 public class TestApp {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if(args.length > 4) {
             System.err.println("ERROR: App format must be: App <host>/<peer_ap> <sub_protocol> <opnd_1> <opnd_2>");
             return;
@@ -37,8 +36,9 @@ public class TestApp {
                     // ...
                     break;
                 case "DELETE":
+                    System.out.println("Deleting...");
                     path = args[2];
-                    // ...
+                    initiatorPeer.delete(path);
                     break;
                 case "RESTORE":
                     path = args[2];

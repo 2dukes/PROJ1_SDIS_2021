@@ -21,9 +21,12 @@ public class PeerFile implements Serializable {
     private int peerId;
     private int replicationDegree;
     private List<Chunk> chunks;
+    private List<Integer> peersBackingUp;
+    private String path;
 
     public PeerFile(String path, int replicationDegree, int peerId) throws IOException, NoSuchAlgorithmException  {
         this.replicationDegree = replicationDegree;
+        this.path = path;
         this.peerId = peerId;
         Path fPath = Paths.get(path);
         UserPrincipal fileOwner = Files.getOwner(fPath, LinkOption.NOFOLLOW_LINKS);
@@ -32,6 +35,8 @@ public class PeerFile implements Serializable {
 
         this.createIdentifier(fPath.getFileName().toString(), fileOwner.getName(), new Date(lastModifiedMs));
         this.createChunks(fPath);
+
+        this.peersBackingUp = new ArrayList<>();
     }
 
     // https://www.geeksforgeeks.org/sha-256-hash-in-java/
@@ -88,4 +93,24 @@ public class PeerFile implements Serializable {
 
     }
 
+    public List<Integer> getPeersBackingUp() {
+        return peersBackingUp;
+    }
+
+    public void addPeerBackingUp(int peerId) {
+        this.peersBackingUp.add(peerId);
+    }
+
+    public void removePeerBackingUp(int peerId) {
+        for (int i = 0; i < peersBackingUp.size(); i++) {
+            if (peersBackingUp.get(i) == peerId) {
+                peersBackingUp.remove(i);
+                return;
+            }
+        }
+    }
+
+    public String getPath() {
+        return path;
+    }
 }

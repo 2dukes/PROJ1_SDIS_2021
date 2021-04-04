@@ -41,7 +41,7 @@ public class PutChunk extends MessageManager {
                 peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, body, this.replicationDeg);
 
                 Peer.storage.putChunk(chunk);
-                Peer.storage.updateAvailableStorage(body.length);
+                Peer.storage.decreaseAvailableStorage(body.length);
 
                 createChunkFile(chunk.getData());
 
@@ -64,7 +64,7 @@ public class PutChunk extends MessageManager {
 
     public void createChunkFile(byte[] data) {
         try {
-            String fileName = "src/files/chunks/" + this.chunkKey + ".txt";
+            String fileName = "src/files/chunks/" + Peer.id + "/" + this.chunkKey + ".txt";
 
             File f = new File(fileName);
             if(!f.exists()) {

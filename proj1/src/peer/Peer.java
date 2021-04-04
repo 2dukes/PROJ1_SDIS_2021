@@ -34,14 +34,13 @@ public class Peer implements RMIService {
         mdrChannel = new MDRChannel(IP_MDR, PORT_MDR);
     }
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InterruptedException {
+    public static void main(String[] args) {
         if (args.length != 9) {
             System.err.println("Usage: java Peer <id> <version> <access point> <IP-MC> <Port-MC> <IP-MDB> <Port-MDB> <IP-MDR> <Port-MDR>");
             return;
         }
         try {
-            // id = Integer.parseInt(args[0]);
-            id = new Random().nextInt(100000000);
+            id = Integer.parseInt(args[0]);
             version = args[1];
             accessPoint = args[2];
 
@@ -65,17 +64,6 @@ public class Peer implements RMIService {
         //Runtime.getRuntime().addShutdownHook(new Thread(Peer::serializeStorage));
         // deserializeStorage();
 
-
-//        Scanner scanner = new Scanner(System.in);
-//        System.out.print("Please enter the filepath: ");
-//        String filepath = scanner.nextLine();
-//
-//        System.out.print("Please enter the desired replication degree: ");
-//        int replicationDegree = scanner.nextInt();
-
-//        PeerFile peerFile1 = new PeerFile(filepath, replicationDegree, Peer.id);
-//
-//        Peer.storage.addFile(peerFile1);
 
         Executors.newScheduledThreadPool(150).execute(mdbChannel);
         Executors.newScheduledThreadPool(150).execute(mcChannel);
@@ -124,7 +112,6 @@ public class Peer implements RMIService {
     }
 
     public void backup(String path, int replicationDeg) throws IOException, NoSuchAlgorithmException, RemoteException {
-        System.out.println("Entered backup function! :)");
 
         PeerFile peerFile = new PeerFile(path, replicationDeg, Peer.id);
         List<Chunk> fileChunks = peerFile.getChunks();
@@ -146,6 +133,19 @@ public class Peer implements RMIService {
             mdbChannel.send(message);
             Executors.newScheduledThreadPool(150).schedule(new manageThreads.PutChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
+        }
+    }
+
+    public void delete(String path) throws RemoteException {
+        try {
+            String fileId = storage.getFileIdByPath(path);
+            String messageStr = "1.0 DELETE " + id + " " + fileId + "\r\n\r\n"; // HardCoded ID
+
+            byte[] header = messageStr.getBytes();
+
+            mcChannel.send(header);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
     }
 

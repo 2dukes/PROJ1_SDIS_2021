@@ -1,5 +1,6 @@
 package channels;
 
+import messageManager.Delete;
 import messageManager.PutChunk;
 import messageManager.Stored;
 
@@ -42,7 +43,7 @@ public class MCChannel implements Runnable {
                 // ...
                 break;
             case "DELETE":
-                // ...
+                Executors.newScheduledThreadPool(150).execute(new Delete(data));
                 break;
             case "REMOVED":
                 // ...
