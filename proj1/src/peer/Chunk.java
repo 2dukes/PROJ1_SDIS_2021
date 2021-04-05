@@ -50,11 +50,19 @@ public class Chunk implements Serializable {
         return b.chunkNo - a.chunkNo;
     }
 
+    public static int compareToSize(Chunk b, Chunk a) {
+        return b.data.length - a.data.length;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Chunk chunk = (Chunk) o;
         return chunkNo == chunk.chunkNo && fileId.equals(chunk.fileId);
+    }
+
+    public String getKey() {
+        return this.fileId + " " + this.chunkNo;
     }
 }
