@@ -65,7 +65,7 @@ public class PutChunk extends MessageManager {
 
     public void createChunkFile(byte[] data) {
         try {
-            String fileName = "src/files/chunks/" + Peer.id + "/" + this.chunkKey + ".txt";
+            String fileName = "src/files/chunks/" + Peer.id + "/" + this.chunkKey;
 
             File f = new File(fileName);
             if(!f.exists()) {
