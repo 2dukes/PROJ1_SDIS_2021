@@ -16,12 +16,13 @@ public class Chunk extends MessageManager {
 
     @Override
     public void run() {
+        //System.out.println("Initial=" + this.chunkNo);
         if (Peer.id != this.senderId) {
             if(Peer.id != INITIATOR_ID) {
                 if(peer.Peer.storage.getChunk(this.fileId, this.chunkNo) == null)
                     return;
             }
-
+          //  System.out.println("Chunk=" + this.chunkNo);
             peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, this.body, 0);
             Peer.storage.addRestoredChunk(chunk);
 

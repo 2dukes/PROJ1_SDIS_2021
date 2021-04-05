@@ -3,6 +3,7 @@ package peer;
 import channels.MCChannel;
 import channels.MDBChannel;
 import channels.MDRChannel;
+import macros.Macros;
 
 import java.io.*;
 import java.net.SocketException;
@@ -65,9 +66,9 @@ public class Peer implements RMIService {
         // deserializeStorage();
 
 
-        Executors.newScheduledThreadPool(150).execute(mdbChannel);
-        Executors.newScheduledThreadPool(150).execute(mcChannel);
-        Executors.newScheduledThreadPool(150).execute(mdrChannel);
+        Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(mdbChannel);
+        Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(mcChannel);
+        Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(mdrChannel);
         System.out.print("Hello :)");
         System.out.println("My id: " + id);
     }
@@ -132,7 +133,7 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mdbChannel.send(message);
-            Executors.newScheduledThreadPool(150).schedule(new manageThreads.PutChunk(message,
+            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new manageThreads.PutChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
     }
@@ -164,14 +165,16 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mcChannel.send(message);
-            Executors.newScheduledThreadPool(150).execute(new manageThreads.PutChunk(message,
-                    peerFile.getId(), chunkNo));
+            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new manageThreads.GetChunk(message,
+                    peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
+
+        Thread.sleep(10000);
 
         // Sort receivedChunks
         storage.getRestoredChunks().sort(Chunk::compareTo);
 
         // Create File
-        storage.restoreFile(path);
+        storage.restoreFile(path, peerFile.getChunks().size());
     }
 }

@@ -1,5 +1,6 @@
 package channels;
 
+import macros.Macros;
 import messageManager.Chunk;
 
 import java.net.SocketException;
@@ -17,7 +18,7 @@ public class MDRChannel extends Channel {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "CHUNK":
-                Executors.newScheduledThreadPool(150).execute(new Chunk(data));
+                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Chunk(data));
                 break;
             default:
                 System.err.println("MDR Channel message type error:" + msgType);

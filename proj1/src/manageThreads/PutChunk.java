@@ -1,5 +1,6 @@
 package manageThreads;
 
+import macros.Macros;
 import peer.Chunk;
 import peer.Peer;
 import peer.PeerFile;
@@ -20,7 +21,6 @@ public class PutChunk implements Runnable {
         this.chunkNo = chunkNo;
         this.counter = 1;
         this.time = 1;
-        System.out.println("CONSTRUCTOR!\n");
     }
 
     @Override
@@ -30,12 +30,12 @@ public class PutChunk implements Runnable {
 
         int currentReplicationDeg = chunk.getCurrentReplicationDegree();
         int desiredReplicationDeg = chunk.getDesiredReplicationDegree();
-        System.out.println("Current RepDeg = " + currentReplicationDeg);
+        // System.out.println("Current RepDeg = " + currentReplicationDeg);
         if(currentReplicationDeg < desiredReplicationDeg && this.counter++ < 5) {
             this.time *= 2;
             Peer.mdbChannel.send(message);
             System.out.format("Sent Retry [%d] for Chunk [fileId=%s | chunkNo=%d]\n", this.counter, this.fileId, this.chunkNo);
-            Executors.newScheduledThreadPool(150).schedule(this, this.time, TimeUnit.SECONDS);
+            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(this, this.time, TimeUnit.SECONDS);
         }
     }
 }

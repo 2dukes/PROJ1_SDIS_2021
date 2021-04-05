@@ -1,6 +1,7 @@
 package peer;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Chunk implements Serializable {
     private String fileId;
@@ -16,8 +17,6 @@ public class Chunk implements Serializable {
         this.desiredReplicationDegree = desiredReplicationDegree;
         this.currentReplicationDegree = 0;
     }
-
-
 
     public String getFileId() {
         return this.fileId;
@@ -51,4 +50,11 @@ public class Chunk implements Serializable {
         return b.chunkNo - a.chunkNo;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Chunk chunk = (Chunk) o;
+        return chunkNo == chunk.chunkNo && fileId.equals(chunk.fileId);
+    }
 }

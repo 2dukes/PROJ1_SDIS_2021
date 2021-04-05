@@ -1,5 +1,6 @@
 package channels;
 
+import macros.Macros;
 import messageManager.PutChunk;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class MDBChannel extends Channel {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "PUTCHUNK":
-                Executors.newScheduledThreadPool(150).execute(new PutChunk(data));
+                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new PutChunk(data));
                 break;
             default:
                 System.err.println("MDB Channel message type error:" + msgType);

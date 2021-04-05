@@ -1,5 +1,6 @@
 package responseManager;
 
+import macros.Macros;
 import peer.Peer;
 
 import java.io.ByteArrayOutputStream;

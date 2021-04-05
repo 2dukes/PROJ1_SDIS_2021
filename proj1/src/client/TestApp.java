@@ -4,6 +4,7 @@ import peer.RMIService;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.sql.SQLOutput;
 
 public class TestApp {
     public static void main(String[] args) {
@@ -48,6 +49,7 @@ public class TestApp {
                     throw new Exception("Wrong arguments [sub_protocol = " + subProtocol + "]");
             }
         } catch(Exception e) {
+            e.printStackTrace();
             System.err.println(e.toString());
         }
 

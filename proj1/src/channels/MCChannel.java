@@ -1,5 +1,6 @@
 package channels;
 
+import macros.Macros;
 import messageManager.Delete;
 import messageManager.GetChunk;
 import messageManager.PutChunk;
@@ -22,16 +23,16 @@ public class MCChannel extends Channel {
         String msgType = new String(data).trim().split(" ")[1];
         switch (msgType) {
             case "GETCHUNK":
-                Executors.newScheduledThreadPool(150).execute(new GetChunk(data));
+                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new GetChunk(data));
                 break;
             case "DELETE":
-                Executors.newScheduledThreadPool(150).execute(new Delete(data));
+                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Delete(data));
                 break;
             case "REMOVED":
                 // ...
                 break;
             case "STORED":
-                Executors.newScheduledThreadPool(150).execute(new Stored(data));
+                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Stored(data));
                 break;
             default:
                 System.err.println("MC Channel message type error:" + msgType);

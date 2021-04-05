@@ -1,5 +1,6 @@
 package messageManager;
 
+import macros.Macros;
 import peer.Chunk;
 import peer.Peer;
 import responseManager.SendChunk;
@@ -26,7 +27,7 @@ public class GetChunk extends MessageManager {
             if(chunk == null)
                 return;
 
-            Executors.newScheduledThreadPool(150).schedule(new SendChunk(this.version, this.fileId,
+            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new SendChunk(this.version, this.fileId,
                     this.chunkNo, chunk.getData()), new Random().nextInt(401), TimeUnit.MILLISECONDS);
         }
     }

@@ -75,6 +75,9 @@ public class PeerFile implements Serializable {
 
         for(i = 0; i < fileSize; i += 64000) {
             byte[] chunkData;
+            double a = (double) i / (double) fileSize;
+            double b = a * 100;
+            // System.out.println("Percentage: " + b);
             if (fileSize - i >= chunkSize) { // if it's not the last chunk
                 chunkData = Arrays.copyOf(fileData,chunkSize);
                 fileData = Arrays.copyOfRange(fileData, chunkSize, fileSize - i);
@@ -89,6 +92,7 @@ public class PeerFile implements Serializable {
                 this.chunks.add(new Chunk(this.fileId, chunkNo++, chunkData, this.replicationDegree));
             }
         }
+
     }
 
     public List<Integer> getPeersBackingUp() {

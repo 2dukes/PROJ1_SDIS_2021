@@ -51,7 +51,7 @@ public abstract class Channel implements Runnable {
 
                 handleMessageType(data);
 
-                // Executors.newScheduledThreadPool(150).execute(new MessageManagerBackup(packet.getData()));
+                // Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new MessageManagerBackup(packet.getData()));
             }
 
         } catch(IOException err) {

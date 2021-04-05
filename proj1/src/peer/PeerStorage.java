@@ -51,7 +51,8 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void addRestoredChunk(Chunk chunk) {
-        this.restoredChunks.add(chunk);
+        if(!this.restoredChunks.contains(chunk))
+            this.restoredChunks.add(chunk);
     }
 
     public synchronized boolean chunkAlreadyRestored(String fileId, int chunkNo) {
@@ -137,7 +138,7 @@ public class PeerStorage implements Serializable {
             System.out.format("Chunk [fileId=%s | chunkNo=%d] not present in peer.", fileId, chunkNo);
     }
 
-    public void deleteFileChunks(String fileId) {
+    public synchronized void deleteFileChunks(String fileId) {
         try {
             for (String key : this.chunks.keySet()) {
                 String id = this.chunks.get(key).getFileId();
@@ -152,7 +153,7 @@ public class PeerStorage implements Serializable {
         }
     }
 
-    public void deleteChunkFile(String key) throws Exception {
+    public synchronized void deleteChunkFile(String key) throws Exception {
         File file = new File("src/files/chunks/" + Peer.id + "/" + key + ".txt");
         if (!file.delete()) {
             throw new Exception("Chunk file with key = " + key + " does not exist or was already deleted.");
@@ -167,10 +168,20 @@ public class PeerStorage implements Serializable {
         throw new Exception("Could not find the file with path " + path);
     }
 
-    public void restoreFile(String filePath) {
+    public void restoreFile(String filePath, int numberOfExpectedChunks) {
         try {
+            System.out.println("Restored Size " + this.restoredChunks.size());
+            System.out.println("Number of Expected " + numberOfExpectedChunks);
+
+            for (int i = 0; i < this.restoredChunks.size(); i++) {
+                System.out.println("Chunk Number " + this.restoredChunks.get(i).getChunkNo());
+            }
+
+            if(this.restoredChunks.size() != numberOfExpectedChunks)
+                throw new Exception("Insufficient number of chunks provided.");
+
             String[] pathArray = filePath.split("/");
-            String path = pathArray[filePath.length() - 1];
+            String path = pathArray[pathArray.length - 1];
             String fileName = "src/files/restored/" + Peer.id + "/" + path;
 
             File f = new File(fileName);
@@ -179,17 +190,19 @@ public class PeerStorage implements Serializable {
                 f.createNewFile();
             }
 
-            System.out.println("Restoring file....");
+            System.out.println("Restoring file...");
             FileOutputStream file = new FileOutputStream(fileName);
 
             for(int i = 0; i < this.restoredChunks.size(); i++)
                 file.write(this.restoredChunks.get(i).getData(), 0, this.restoredChunks.get(i).getData().length);
 
+
             file.close();
 
             System.out.println("DONE");
+            this.restoredChunks.clear();
         }
-        catch(IOException e) {
+        catch(Exception e) {
             System.err.println("Exception was caught: " + e.toString());
         }
     }
