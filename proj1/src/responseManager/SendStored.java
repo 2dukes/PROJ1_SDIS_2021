@@ -1,17 +1,14 @@
 package responseManager;
 
-import macros.Macros;
 import peer.Peer;
 
 public class SendStored implements Runnable {
     private String version;
-    private int senderId;
     private String fileId;
     private int chunkNo;
 
-    public SendStored(String version, int senderId, String fileId, int chunkNo) {
+    public SendStored(String version, String fileId, int chunkNo) {
         this.version = version;
-        this.senderId = senderId;
         this.fileId = fileId;
         this.chunkNo = chunkNo;
     }

@@ -17,6 +17,8 @@ public class Chunk implements Serializable {
         this.currentReplicationDegree = 0;
     }
 
+
+
     public String getFileId() {
         return this.fileId;
     }
@@ -44,4 +46,9 @@ public class Chunk implements Serializable {
     public int getDesiredReplicationDegree() {
         return desiredReplicationDegree;
     }
+
+    public static int compareTo(Chunk b, Chunk a) {
+        return b.chunkNo - a.chunkNo;
+    }
+
 }

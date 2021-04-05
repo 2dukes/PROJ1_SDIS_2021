@@ -67,6 +67,7 @@ public class Peer implements RMIService {
 
         Executors.newScheduledThreadPool(150).execute(mdbChannel);
         Executors.newScheduledThreadPool(150).execute(mcChannel);
+        Executors.newScheduledThreadPool(150).execute(mdrChannel);
         System.out.print("Hello :)");
         System.out.println("My id: " + id);
     }
@@ -138,15 +139,39 @@ public class Peer implements RMIService {
 
     public void delete(String path) throws RemoteException {
         try {
-            String fileId = storage.getFileIdByPath(path);
-            String messageStr = "1.0 DELETE " + id + " " + fileId + "\r\n\r\n"; // HardCoded ID
+            PeerFile peerFile = storage.getFileByPath(path);
+            String messageStr = "1.0 DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
 
             byte[] header = messageStr.getBytes();
 
-            mcChannel.send(header);
+            for (int i = 0; i < 5; i++)
+                mcChannel.send(header);
+
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
 
+    public void restore(String path) throws Exception {
+        PeerFile peerFile = storage.getFileByPath(path);
+        int fileChunksSize = peerFile.getChunks().size();
+
+        for(int i = 0; i < fileChunksSize; i++) {
+            int chunkNo = i + 1;
+            String messageStr = "1.0 GETCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + "\r\n\r\n";
+
+            byte[] message = messageStr.getBytes();
+
+            System.out.println(messageStr);
+            mcChannel.send(message);
+            Executors.newScheduledThreadPool(150).execute(new manageThreads.PutChunk(message,
+                    peerFile.getId(), chunkNo));
+        }
+
+        // Sort receivedChunks
+        storage.getRestoredChunks().sort(Chunk::compareTo);
+
+        // Create File
+        storage.restoreFile(path);
+    }
 }

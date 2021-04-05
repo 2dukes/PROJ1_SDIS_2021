@@ -1,20 +1,24 @@
 package peer;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PeerStorage implements Serializable {
-    public ArrayList<PeerFile> peerFiles;
+    public List<PeerFile> peerFiles;
     private int availableStorage = (int) (5 * Math.pow(10, 9)); // ~ 5 GBytes
 
     // Key: fileId chunkNo
     // Value: Number of times the chunk was stored
     private ConcurrentHashMap<String, Chunk> chunks;
+    private List<Chunk> restoredChunks;
 
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
+        this.restoredChunks = new ArrayList<>();
         this.chunks = new ConcurrentHashMap<>();
     }
 
@@ -28,15 +32,38 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized int getAvailableStorage() {
-        return availableStorage;
+        return this.availableStorage;
     }
 
-    public synchronized ArrayList<PeerFile> getPeerFiles() {
-        return peerFiles;
+    public synchronized List<PeerFile> getPeerFiles() {
+        return this.peerFiles;
+    }
+
+    public synchronized List<Chunk> getRestoredChunks() { return this.restoredChunks; }
+
+    public synchronized void deleteRestoredChunks(String fileId, int chunkNo) {
+        for (int i = 0; i < this.restoredChunks.size(); i++) {
+            if(this.restoredChunks.get(i).getFileId().equals(fileId) && this.restoredChunks.get(i).getChunkNo() == chunkNo) {
+                this.restoredChunks.remove(i);
+                return;
+            }
+        }
+    }
+
+    public synchronized void addRestoredChunk(Chunk chunk) {
+        this.restoredChunks.add(chunk);
+    }
+
+    public synchronized boolean chunkAlreadyRestored(String fileId, int chunkNo) {
+        for (int i = 0; i < this.restoredChunks.size(); i++) {
+            if(this.restoredChunks.get(i).getFileId().equals(fileId) && this.restoredChunks.get(i).getChunkNo() == chunkNo)
+                return true;
+        }
+        return false;
     }
 
     public synchronized Map<String, Chunk> getChunks() {
-        return chunks;
+        return this.chunks;
     }
 
     public synchronized void decreaseAvailableStorage(int chunkSize) {
@@ -80,6 +107,14 @@ public class PeerStorage implements Serializable {
         return null;
     }
 
+    public synchronized Chunk getChunk(String fileId, int chunkNo) {
+        for (String key : this.chunks.keySet()) {
+            if (this.chunks.get(key).getFileId().equals(fileId) && this.chunks.get(key).getChunkNo() == chunkNo)
+                return this.chunks.get(key);
+        }
+        return null;
+    }
+
     public synchronized void updatePeerFileChunkReplicationDeg(String key) {
         String fileId = key.split(" ")[0];
         int chunkNo = Integer.parseInt(key.split(" ")[1]);
@@ -120,15 +155,42 @@ public class PeerStorage implements Serializable {
     public void deleteChunkFile(String key) throws Exception {
         File file = new File("src/files/chunks/" + Peer.id + "/" + key + ".txt");
         if (!file.delete()) {
-            throw new Exception("Error deleting chunk file with key = " + key);
+            throw new Exception("Chunk file with key = " + key + " does not exist or was already deleted.");
         }
     }
 
-    public String getFileIdByPath(String path) throws Exception {
+    public PeerFile getFileByPath(String path) throws Exception {
         for (int i = 0; i < this.peerFiles.size(); i++) {
             if (this.peerFiles.get(i).getPath().equals(path))
-                return this.peerFiles.get(i).getId();
+                return this.peerFiles.get(i);
         }
         throw new Exception("Could not find the file with path " + path);
+    }
+
+    public void restoreFile(String filePath) {
+        try {
+            String[] pathArray = filePath.split("/");
+            String path = pathArray[filePath.length() - 1];
+            String fileName = "src/files/restored/" + Peer.id + "/" + path;
+
+            File f = new File(fileName);
+            if(!f.exists()) {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+            }
+
+            System.out.println("Restoring file....");
+            FileOutputStream file = new FileOutputStream(fileName);
+
+            for(int i = 0; i < this.restoredChunks.size(); i++)
+                file.write(this.restoredChunks.get(i).getData(), 0, this.restoredChunks.get(i).getData().length);
+
+            file.close();
+
+            System.out.println("DONE");
+        }
+        catch(IOException e) {
+            System.err.println("Exception was caught: " + e.toString());
+        }
     }
 }

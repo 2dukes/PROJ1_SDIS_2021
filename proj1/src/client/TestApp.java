@@ -27,7 +27,7 @@ public class TestApp {
             switch (subProtocol) {
                 case "BACKUP":
                     System.out.println("Backing up...");
-                    path = args[2];
+                    path = args[2].trim();
                     int replicationDeg = Integer.parseInt(args[3]);
                     initiatorPeer.backup(path, replicationDeg);
                     break;
@@ -37,12 +37,12 @@ public class TestApp {
                     break;
                 case "DELETE":
                     System.out.println("Deleting...");
-                    path = args[2];
+                    path = args[2].trim();
                     initiatorPeer.delete(path);
                     break;
                 case "RESTORE":
-                    path = args[2];
-                    // ...
+                    path = args[2].trim();
+                    initiatorPeer.restore(path);
                     break;
                 default:
                     throw new Exception("Wrong arguments [sub_protocol = " + subProtocol + "]");

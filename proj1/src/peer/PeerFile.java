@@ -89,8 +89,6 @@ public class PeerFile implements Serializable {
                 this.chunks.add(new Chunk(this.fileId, chunkNo++, chunkData, this.replicationDegree));
             }
         }
-
-
     }
 
     public List<Integer> getPeersBackingUp() {
