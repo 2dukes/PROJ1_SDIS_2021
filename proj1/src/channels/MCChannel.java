@@ -1,10 +1,7 @@
 package channels;
 
 import macros.Macros;
-import messageManager.Delete;
-import messageManager.GetChunk;
-import messageManager.PutChunk;
-import messageManager.Stored;
+import messageManager.*;
 
 import java.io.IOException;
 import java.net.*;
@@ -29,7 +26,7 @@ public class MCChannel extends Channel {
                 Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Delete(data));
                 break;
             case "REMOVED":
-                // ...
+                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Removed(data));
                 break;
             case "STORED":
                 Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Stored(data));

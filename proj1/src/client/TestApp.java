@@ -34,7 +34,7 @@ public class TestApp {
                     break;
                 case "RECLAIM":
                     int amountDiskSpace = Integer.parseInt(args[2]);
-                    // ...
+                    initiatorPeer.reclaim(amountDiskSpace);
                     break;
                 case "DELETE":
                     System.out.println("Deleting...");

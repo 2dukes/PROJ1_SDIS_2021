@@ -206,4 +206,21 @@ public class PeerStorage implements Serializable {
             System.err.println("Exception was caught: " + e.toString());
         }
     }
+
+    public int getTotalStorage() {
+        int total = 0;
+        for (String key : this.chunks.keySet()) {
+            total += this.chunks.get(key).getData().length;
+        }
+        return total;
+    }
+
+    public void removeChunk(String key) {
+        this.chunks.remove(key);
+        try {
+            deleteChunkFile(key);
+        } catch(Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
 }

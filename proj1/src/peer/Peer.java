@@ -15,6 +15,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -176,5 +177,32 @@ public class Peer implements RMIService {
 
         // Create File
         storage.restoreFile(path, peerFile.getChunks().size());
+    }
+
+    public void reclaim(int maximumDiskSpace) throws RemoteException {
+        int totalStorage = storage.getTotalStorage();
+        int toRemove = totalStorage - maximumDiskSpace;
+
+        if (toRemove < 0)
+            storage.increaseAvailableStorage(-toRemove);
+        else if (toRemove > 0) {
+            List<Chunk> chunksList = new ArrayList<>(storage.getChunks().values());
+            chunksList.sort((c1, c2) -> Chunk.compareToSize(c2, c1));
+            int i = 0, removed = 0;
+            while (removed < toRemove && i < chunksList.size()) {
+                Chunk chunk = chunksList.get(i);
+                storage.removeChunk(chunk.getKey());
+                removed += chunk.getData().length;
+
+                String messageStr = "1.0 REMOVED " + id + " " + chunk.getFileId() + " " + chunk.getChunkNo() + "\r\n\r\n";
+
+                byte[] message = messageStr.getBytes();
+
+                System.out.println(messageStr);
+                mcChannel.send(message);
+                i++;
+            }
+            storage.decreaseAvailableStorage(removed);
+        }
     }
 }
