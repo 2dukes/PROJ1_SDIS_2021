@@ -187,7 +187,7 @@ public class Peer implements RMIService {
             storage.increaseAvailableStorage(-toRemove);
         else if (toRemove > 0) {
             List<Chunk> chunksList = new ArrayList<>(storage.getChunks().values());
-            chunksList.sort((c1, c2) -> Chunk.compareToSize(c2, c1));
+            chunksList.sort((c1, c2) -> Chunk.compareToReplicationDeg(c2, c1));
             int i = 0, removed = 0;
             while (removed < toRemove && i < chunksList.size()) {
                 Chunk chunk = chunksList.get(i);

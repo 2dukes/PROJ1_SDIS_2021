@@ -20,7 +20,7 @@ public abstract class Channel implements Runnable {
         }
     }
 
-    public void send(byte[] outbuf) {
+    public synchronized void send(byte[] outbuf) {
         try {
             DatagramPacket packet = new DatagramPacket(outbuf, outbuf.length, destination, this.port);
             socket.send(packet);

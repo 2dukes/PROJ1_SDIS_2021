@@ -16,7 +16,7 @@ public class MCChannel extends Channel {
 
     // GETCHUNK | DELETE | REMOVED | STORED
     @Override
-    public void handleMessageType(byte[] data) {
+    public synchronized void handleMessageType(byte[] data) {
         String msgType = new String(data).trim().split(" ")[1];
         switch (msgType) {
             case "GETCHUNK":

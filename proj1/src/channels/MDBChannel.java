@@ -16,7 +16,7 @@ public class MDBChannel extends Channel {
     }
 
     @Override
-    public void handleMessageType(byte[] data) {
+    public synchronized void handleMessageType(byte[] data) {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "PUTCHUNK":

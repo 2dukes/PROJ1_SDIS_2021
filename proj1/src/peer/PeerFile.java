@@ -77,7 +77,7 @@ public class PeerFile implements Serializable {
             byte[] chunkData;
             double a = (double) i / (double) fileSize;
             double b = a * 100;
-            // System.out.println("Percentage: " + b);
+            System.out.println("Percentage: " + b);
             if (fileSize - i >= chunkSize) { // if it's not the last chunk
                 chunkData = Arrays.copyOf(fileData,chunkSize);
                 fileData = Arrays.copyOfRange(fileData, chunkSize, fileSize - i);

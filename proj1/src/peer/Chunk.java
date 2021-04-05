@@ -50,8 +50,10 @@ public class Chunk implements Serializable {
         return b.chunkNo - a.chunkNo;
     }
 
-    public static int compareToSize(Chunk b, Chunk a) {
-        return b.data.length - a.data.length;
+    // sort by the unnecessary replication degree
+    public static int compareToReplicationDeg(Chunk b, Chunk a) {
+        return (b.getDesiredReplicationDegree() - b.getCurrentReplicationDegree())
+                - (a.getDesiredReplicationDegree() - a.getCurrentReplicationDegree());
     }
 
     @Override
