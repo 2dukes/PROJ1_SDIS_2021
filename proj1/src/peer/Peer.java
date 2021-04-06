@@ -17,14 +17,13 @@ import java.security.NoSuchAlgorithmException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class Peer implements RMIService {
     public static int id;
+    public static boolean isInitiator;
     public static String version;
     public static String accessPoint;
     public static MCChannel mcChannel;
@@ -38,6 +37,7 @@ public class Peer implements RMIService {
         mdbChannel = new MDBChannel(IP_MDB, PORT_MDB);
         mdrChannel = new MDRChannel(IP_MDR, PORT_MDR);
         scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(Macros.NUM_THREADS);
+        isInitiator = false;
     }
 
     public static void main(String[] args) {
@@ -93,6 +93,7 @@ public class Peer implements RMIService {
             out.writeObject(storage);
             out.close();
             file.close();
+            Peer.isInitiator = false;
         }
         catch(IOException e) {
             System.err.println("Exception was caught: " + e.toString());
@@ -174,7 +175,7 @@ public class Peer implements RMIService {
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
 
-        Thread.sleep(fileChunksSize * 15);
+        Thread.sleep(fileChunksSize * 20);
 
         // Sort receivedChunks
         storage.getRestoredChunks().sort(Chunk::compareTo);
@@ -208,5 +209,9 @@ public class Peer implements RMIService {
             }
             storage.decreaseAvailableStorage(removed);
         }
+    }
+
+    public void setInitiator(boolean isInitiator) {
+        Peer.isInitiator = isInitiator;
     }
 }

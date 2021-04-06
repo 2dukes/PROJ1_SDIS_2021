@@ -1,7 +1,6 @@
 package messageManager;
 
 import peer.Peer;
-import static macros.Macros.INITIATOR_ID;
 
 public class Chunk extends MessageManager {
     private int chunkNo;
@@ -18,7 +17,7 @@ public class Chunk extends MessageManager {
     public void run() {
         //System.out.println("Initial=" + this.chunkNo);
         if (Peer.id != this.senderId) {
-            if(Peer.id != INITIATOR_ID) {
+            if(!Peer.isInitiator) {
                 if(peer.Peer.storage.getChunk(this.fileId, this.chunkNo) == null)
                     return;
             }

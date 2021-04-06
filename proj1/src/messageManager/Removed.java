@@ -1,15 +1,11 @@
 package messageManager;
 
-import macros.Macros;
 import peer.Peer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import static macros.Macros.INITIATOR_ID;
 
 public class Removed extends MessageManager {
     private int chunkNo;
@@ -26,7 +22,7 @@ public class Removed extends MessageManager {
     @Override
     public void run() {
         if (Peer.id != this.senderId) {
-            if(Peer.id == INITIATOR_ID)
+            if(Peer.isInitiator)
                 return;
 
             Peer.storage.decrementChunkReplicationDeg(this.fileId + " " + this.chunkNo);

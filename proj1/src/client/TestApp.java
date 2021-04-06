@@ -22,6 +22,7 @@ public class TestApp {
             System.out.println("RMI 1");
             Registry registry = LocateRegistry.getRegistry(host);
             RMIService initiatorPeer = (RMIService) registry.lookup(accessPoint);
+            initiatorPeer.setInitiator(true);
             System.out.println("RMI 2");
 
             String path;
@@ -33,6 +34,7 @@ public class TestApp {
                     initiatorPeer.backup(path, replicationDeg);
                     break;
                 case "RECLAIM":
+                    System.out.println("Reclaiming file...");
                     int amountDiskSpace = Integer.parseInt(args[2]);
                     initiatorPeer.reclaim(amountDiskSpace);
                     break;
