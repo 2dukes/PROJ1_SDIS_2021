@@ -82,12 +82,8 @@ public class PeerStorage implements Serializable {
         return this.chunks;
     }
 
-    public synchronized void decreaseAvailableStorage(int chunkSize) {
-        this.availableStorage -= chunkSize;
-    }
-
-    public synchronized void increaseAvailableStorage(int chunkSize) {
-        this.availableStorage += chunkSize;
+    public synchronized void setAvailableStorage(int size) {
+        this.availableStorage = size;
     }
 
     public synchronized void incrementChunkReplicationDeg(String key) {
@@ -139,7 +135,7 @@ public class PeerStorage implements Serializable {
         if(chunk != null)
             chunk.incrementCurrentReplicationDegree();
         else
-            System.out.format("Chunk [fileId=%s | chunkNo=%d] not present in peer.", fileId, chunkNo);
+            System.out.format("Chunk [fileId=%s | chunkNo=%d] not present in peer.\n", fileId, chunkNo);
     }
 
     public synchronized void decreasePeerFileChunkReplicationDeg(String key) {
@@ -160,7 +156,6 @@ public class PeerStorage implements Serializable {
                 if (id.equals(fileId)) {
                     this.chunks.remove(id);
                     deleteChunkFile(key);
-                    increaseAvailableStorage(this.chunks.get(key).getData().length);
                 }
             }
         } catch (Exception e) {

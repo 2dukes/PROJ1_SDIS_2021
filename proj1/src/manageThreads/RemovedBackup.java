@@ -1,16 +1,9 @@
 package manageThreads;
 
-import channels.PutChunkMDBChannel;
-import macros.Macros;
-import peer.Chunk;
 import peer.Peer;
-import peer.PeerFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class RemovedBackup implements Runnable {
@@ -29,7 +22,7 @@ public class RemovedBackup implements Runnable {
     @Override
     public void run() {
         String value = this.fileId + " " + this.chunkNo;
-        if(Peer.storage.getRemovedPutChunks().contains(value)) {
+        if(!Peer.storage.getRemovedPutChunks().contains(value)) {
             String messageStr = "1.0 PUTCHUNK " + Peer.id + " " + this.fileId + " " + this.chunkNo + " " + this.desiredReplicationDeg + "\r\n\r\n"; // HardCoded ID
 
             byte[] header = messageStr.getBytes();

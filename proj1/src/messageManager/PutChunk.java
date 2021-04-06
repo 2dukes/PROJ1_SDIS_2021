@@ -38,13 +38,14 @@ public class PutChunk extends MessageManager {
             if(Peer.storage.getChunks().containsKey(chunkKey))
                 return;
 
-            if(Peer.storage.getAvailableStorage() >= body.length) {
+            if(Peer.storage.getAvailableStorage() - Peer.storage.getTotalStorage() >= body.length) {
                 peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, body, this.replicationDeg);
 
                 Peer.storage.putChunk(chunk);
-                Peer.storage.decreaseAvailableStorage(body.length);
+                Peer.storage.addRemovedPutChunk(chunk.getKey());
 
                 createChunkFile(chunk.getData());
+
 
                 System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                         this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);

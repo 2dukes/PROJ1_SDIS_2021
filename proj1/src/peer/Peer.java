@@ -188,12 +188,13 @@ public class Peer implements RMIService {
         int totalStorage = storage.getTotalStorage();
         int toRemove = totalStorage - maximumDiskSpace;
 
-        if (toRemove < 0)
-            storage.increaseAvailableStorage(-toRemove);
-        else if (toRemove > 0) {
+        storage.setAvailableStorage(maximumDiskSpace);
+
+        if (toRemove > 0) {
             List<Chunk> chunksList = new ArrayList<>(storage.getChunks().values());
             chunksList.sort((c1, c2) -> Chunk.compareToReplicationDeg(c2, c1));
             int i = 0, removed = 0;
+
             while (removed < toRemove && i < chunksList.size()) {
                 Chunk chunk = chunksList.get(i);
                 storage.removeChunk(chunk.getKey());
@@ -207,7 +208,6 @@ public class Peer implements RMIService {
                 mcChannel.send(message);
                 i++;
             }
-            storage.decreaseAvailableStorage(removed);
         }
     }
 
