@@ -47,7 +47,6 @@ public class PutChunk extends MessageManager {
 
                 createChunkFile(chunk.getData());
 
-
                 System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                         this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
                 Peer.scheduledThreadPoolExecutor.schedule(new SendStored(this.version, this.fileId, this.chunkNo),

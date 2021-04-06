@@ -121,7 +121,7 @@ public class Peer implements RMIService {
         }
     }
 
-    public void backup(String path, int replicationDeg) throws IOException, NoSuchAlgorithmException, RemoteException {
+    public void backup(String path, int replicationDeg) throws IOException, NoSuchAlgorithmException, RemoteException, InterruptedException {
 
         PeerFile peerFile = new PeerFile(path, replicationDeg, Peer.id);
         List<Chunk> fileChunks = peerFile.getChunks();
@@ -141,6 +141,7 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mdbChannel.send(message);
+            Thread.sleep(10);
             scheduledThreadPoolExecutor.schedule(new manageThreads.PutChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
@@ -186,7 +187,8 @@ public class Peer implements RMIService {
         storage.restoreFile(path, peerFile.getChunks().size());
     }
 
-    public void reclaim(int maximumDiskSpace) throws RemoteException {
+    public void reclaim(int diskSpace) throws RemoteException {
+        int maximumDiskSpace = diskSpace * 1000; // Convert to Bytes
         int totalStorage = storage.getTotalStorage();
         int toRemove = totalStorage - maximumDiskSpace;
 
@@ -211,6 +213,37 @@ public class Peer implements RMIService {
                 i++;
             }
         }
+    }
+
+    public String state() throws RemoteException {
+        String peerState = "\n\n\n------------------------------- Files Backed Up: -------------------------------\n\n\n";
+
+        for(int i = 0; i < storage.getPeerFiles().size(); i++) {
+            PeerFile peerFile = storage.getPeerFiles().get(i);
+            peerState += "\n\nFilename: " + peerFile.getPath() + "\n";
+            peerState += "Backup ID: " + peerFile.getId() + "\n";
+            peerState += "Desired Replication Degree: " + peerFile.getReplicationDegree() + "\n";
+            peerState += "[Chunks]\n\n";
+            for(int j = 0; j < peerFile.getChunks().size(); j++) {
+                Chunk chunk = peerFile.getChunks().get(j);
+                peerState += "\tChunk [id=" + chunk.getChunkNo() + " | perceivedReplicationDeg=" + chunk.getCurrentReplicationDegree() + "]\n";
+            }
+        }
+
+        peerState += "\n\n\n------------------------------- Chunks Stored: -------------------------------\n\n\n";
+        for (String key : storage.getChunks().keySet()) {
+            Chunk chunk = storage.getChunks().get(key);
+            peerState += "\n\nChunk ID: " + chunk.getChunkNo() + "\n";
+            peerState += "Chunk Size: " + (double) chunk.getData().length / 1000 + " kB\n";
+            peerState += "Chunk Desired Replication Degree: " + chunk.getDesiredReplicationDegree() + "\n";
+            peerState += "Chunk Perceived Replication Degree: " + chunk.getCurrentReplicationDegree() + "\n";
+        }
+
+        peerState += "\n\n\n------------------------------- General Information: -------------------------------\n\n\n";
+        peerState += "Peer\'s Capacity: " + (double) storage.getAvailableStorage() / 1000 + " kB\n";
+        peerState += "Peer\'s used Storage: " + (double) storage.getTotalStorage() / 1000 + " kB\n";
+
+        return peerState;
     }
 
     public void setInitiator(boolean isInitiator) {

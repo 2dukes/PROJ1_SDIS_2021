@@ -26,6 +26,10 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void addFile(PeerFile peerFile) {
+        for(int i = 0; i < this.peerFiles.size(); i++) {
+            if(this.peerFiles.get(i).getId().equals(peerFile.getId())) // Verify if it doesn't exist already
+                return;
+        }
         peerFiles.add(peerFile);
     }
 

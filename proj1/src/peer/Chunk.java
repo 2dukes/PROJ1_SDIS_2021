@@ -15,7 +15,7 @@ public class Chunk implements Serializable {
         this.chunkNo = chunkNo;
         this.data = data;
         this.desiredReplicationDegree = desiredReplicationDegree;
-        this.currentReplicationDegree = 0;
+        this.currentReplicationDegree = 1;
     }
 
     public String getFileId() {

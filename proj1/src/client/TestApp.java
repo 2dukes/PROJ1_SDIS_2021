@@ -34,7 +34,7 @@ public class TestApp {
                     initiatorPeer.backup(path, replicationDeg);
                     break;
                 case "RECLAIM":
-                    System.out.println("Reclaiming file...");
+                    System.out.println("Reclaiming Space...");
                     int amountDiskSpace = Integer.parseInt(args[2]);
                     initiatorPeer.reclaim(amountDiskSpace);
                     break;
@@ -44,8 +44,14 @@ public class TestApp {
                     initiatorPeer.delete(path);
                     break;
                 case "RESTORE":
+                    System.out.println("Restoring...");
                     path = args[2].trim();
                     initiatorPeer.restore(path);
+                    break;
+                case "STATE":
+                    System.out.println("Asking for Peer State...");
+                    String peerState = initiatorPeer.state();
+                    System.out.println(peerState);
                     break;
                 default:
                     throw new Exception("Wrong arguments [sub_protocol = " + subProtocol + "]");
