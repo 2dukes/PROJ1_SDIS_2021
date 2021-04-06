@@ -46,12 +46,12 @@ public class Chunk implements Serializable {
         return desiredReplicationDegree;
     }
 
-    public static int compareTo(Chunk b, Chunk a) {
+    public synchronized static int compareTo(Chunk b, Chunk a) {
         return b.chunkNo - a.chunkNo;
     }
 
     // sort by the unnecessary replication degree
-    public static int compareToReplicationDeg(Chunk b, Chunk a) {
+    public synchronized static int compareToReplicationDeg(Chunk b, Chunk a) {
         return (b.getDesiredReplicationDegree() - b.getCurrentReplicationDegree())
                 - (a.getDesiredReplicationDegree() - a.getCurrentReplicationDegree());
     }

@@ -174,7 +174,7 @@ public class Peer implements RMIService {
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
 
-        Thread.sleep(10000);
+        Thread.sleep(fileChunksSize * 15);
 
         // Sort receivedChunks
         storage.getRestoredChunks().sort(Chunk::compareTo);
