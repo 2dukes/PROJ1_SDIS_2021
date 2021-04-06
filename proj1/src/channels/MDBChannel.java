@@ -20,7 +20,7 @@ public class MDBChannel extends Channel {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "PUTCHUNK":
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new PutChunk(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new PutChunk(data));
                 break;
             default:
                 System.err.println("MDB Channel message type error:" + msgType);

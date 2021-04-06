@@ -27,7 +27,7 @@ public class GetChunk extends MessageManager {
             if(chunk == null)
                 return;
 
-            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new SendChunk(this.version, this.fileId,
+            Peer.scheduledThreadPoolExecutor.schedule(new SendChunk(this.version, this.fileId,
                     this.chunkNo, chunk.getData()), new Random().nextInt(401), TimeUnit.MILLISECONDS);
         }
     }

@@ -18,7 +18,7 @@ public class MDRChannel extends Channel {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "CHUNK":
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Chunk(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new Chunk(data));
                 break;
             default:
                 System.err.println("MDR Channel message type error:" + msgType);

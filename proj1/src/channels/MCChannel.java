@@ -20,16 +20,16 @@ public class MCChannel extends Channel {
         String msgType = new String(data).trim().split(" ")[1];
         switch (msgType) {
             case "GETCHUNK":
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new GetChunk(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new GetChunk(data));
                 break;
             case "DELETE":
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Delete(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new Delete(data));
                 break;
             case "REMOVED":
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Removed(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new Removed(data));
                 break;
             case "STORED":
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new Stored(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new Stored(data));
                 break;
             default:
                 System.err.println("MC Channel message type error:" + msgType);

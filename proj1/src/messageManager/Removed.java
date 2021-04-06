@@ -34,7 +34,7 @@ public class Removed extends MessageManager {
             peer.Chunk chunk = Peer.storage.getChunk(this.fileId, this.chunkNo);
 
             if (chunk.getCurrentReplicationDegree() < chunk.getDesiredReplicationDegree()) {
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new manageThreads.RemovedBackup(this.fileId,
+                Peer.scheduledThreadPoolExecutor.schedule(new manageThreads.RemovedBackup(this.fileId,
                         chunkNo), new Random().nextInt(401), TimeUnit.MILLISECONDS);
 
                 String messageStr = "1.0 PUTCHUNK " + Peer.id + " " + this.fileId + " " + chunkNo + " " + chunk.getDesiredReplicationDegree() + "\r\n\r\n"; // HardCoded ID
@@ -52,7 +52,7 @@ public class Removed extends MessageManager {
 
                 System.out.println(messageStr);
                 Peer.mdbChannel.send(message);
-                Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new manageThreads.PutChunk(message,
+                Peer.scheduledThreadPoolExecutor.schedule(new manageThreads.PutChunk(message,
                         this.fileId, chunkNo), 1, TimeUnit.SECONDS);
 
             }

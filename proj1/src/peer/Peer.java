@@ -18,7 +18,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class Peer implements RMIService {
@@ -29,21 +31,23 @@ public class Peer implements RMIService {
     public static MDBChannel mdbChannel;
     public static MDRChannel mdrChannel;
     public static PeerStorage storage;
+    public static ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
     public Peer(String IP_MC, int PORT_MC, String IP_MDB, int PORT_MDB, String IP_MDR, int PORT_MDR) throws SocketException, UnknownHostException {
         mcChannel = new MCChannel(IP_MC, PORT_MC);
         mdbChannel = new MDBChannel(IP_MDB, PORT_MDB);
         mdrChannel = new MDRChannel(IP_MDR, PORT_MDR);
+        scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(Macros.NUM_THREADS);
     }
 
     public static void main(String[] args) {
         if (args.length != 9) {
-            System.err.println("Usage: java Peer <id> <version> <access point> <IP-MC> <Port-MC> <IP-MDB> <Port-MDB> <IP-MDR> <Port-MDR>");
+            System.err.println("Usage: java Peer <version> <id> <access point> <IP-MC> <Port-MC> <IP-MDB> <Port-MDB> <IP-MDR> <Port-MDR>");
             return;
         }
         try {
-            id = Integer.parseInt(args[0]);
-            version = args[1];
+            version = args[0];
+            id = Integer.parseInt(args[1]);
             accessPoint = args[2];
 
             Remote obj = new Peer(args[3], Integer.parseInt(args[4]), args[5], Integer.parseInt(args[6]), args[7], Integer.parseInt(args[8]));
@@ -67,9 +71,9 @@ public class Peer implements RMIService {
         // deserializeStorage();
 
 
-        Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(mdbChannel);
-        Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(mcChannel);
-        Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(mdrChannel);
+        scheduledThreadPoolExecutor.execute(mdbChannel);
+        scheduledThreadPoolExecutor.execute(mcChannel);
+        scheduledThreadPoolExecutor.execute(mdrChannel);
         System.out.print("Hello :)");
         System.out.println("My id: " + id);
     }
@@ -134,7 +138,7 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mdbChannel.send(message);
-            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new manageThreads.PutChunk(message,
+            scheduledThreadPoolExecutor.schedule(new manageThreads.PutChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
     }
@@ -166,7 +170,7 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mcChannel.send(message);
-            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(new manageThreads.GetChunk(message,
+            scheduledThreadPoolExecutor.schedule(new manageThreads.GetChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
 

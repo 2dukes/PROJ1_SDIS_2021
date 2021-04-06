@@ -35,7 +35,7 @@ public class PutChunk implements Runnable {
             this.time *= 2;
             Peer.mdbChannel.send(message);
             System.out.format("Sent Retry [%d] for Chunk [fileId=%s | chunkNo=%d]\n", this.counter, this.fileId, this.chunkNo);
-            Executors.newScheduledThreadPool(Macros.NUM_THREADS).schedule(this, this.time, TimeUnit.SECONDS);
+            Peer.scheduledThreadPoolExecutor.schedule(this, this.time, TimeUnit.SECONDS);
         }
     }
 }
