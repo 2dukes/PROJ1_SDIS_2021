@@ -35,6 +35,8 @@ public class PutChunk extends MessageManager {
             // if(Peer.storage.getChunkOccurrences().get(chunkOccurrencesKey) >= this.replicationDeg)
             //    return;
 
+            String value = this.fileId + " " + this.chunkNo;
+            Peer.storage.addRemovedPutChunk(value);
             if(Peer.storage.getChunks().containsKey(chunkKey))
                 return;
 
@@ -42,7 +44,6 @@ public class PutChunk extends MessageManager {
                 peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, body, this.replicationDeg);
 
                 Peer.storage.putChunk(chunk);
-                Peer.storage.addRemovedPutChunk(chunk.getKey());
 
                 createChunkFile(chunk.getData());
 

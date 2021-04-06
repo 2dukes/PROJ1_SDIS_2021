@@ -74,7 +74,7 @@ public class Peer implements RMIService {
         scheduledThreadPoolExecutor.execute(mdbChannel);
         scheduledThreadPoolExecutor.execute(mcChannel);
         scheduledThreadPoolExecutor.execute(mdrChannel);
-        System.out.print("Hello :)");
+        System.out.print("Hello :) g");
         System.out.println("My id: " + id);
     }
 
@@ -93,7 +93,9 @@ public class Peer implements RMIService {
             out.writeObject(storage);
             out.close();
             file.close();
-            Peer.isInitiator = false;
+
+            isInitiator = false;
+            storage.getRemovedPutChunks().clear();
         }
         catch(IOException e) {
             System.err.println("Exception was caught: " + e.toString());
