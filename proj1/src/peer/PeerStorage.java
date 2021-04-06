@@ -15,15 +15,30 @@ public class PeerStorage implements Serializable {
     // Value: Number of times the chunk was stored
     private ConcurrentHashMap<String, Chunk> chunks;
     private List<Chunk> restoredChunks;
+    // Value: fileId chunkNo
+    private Set<String> receivedRemovedPutChunks;
 
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
         this.restoredChunks = new ArrayList<>();
         this.chunks = new ConcurrentHashMap<>();
+        this.receivedRemovedPutChunks = new HashSet<>();
     }
 
     public synchronized void addFile(PeerFile peerFile) {
         peerFiles.add(peerFile);
+    }
+
+    public synchronized void addRemovedPutChunk(String value) {
+        this.receivedRemovedPutChunks.add(value);
+    }
+
+    public synchronized void deleteRemovedPutChunk(String value) {
+        this.receivedRemovedPutChunks.remove(value);
+    }
+
+    public synchronized Set<String> getRemovedPutChunks() {
+        return this.receivedRemovedPutChunks;
     }
 
     public synchronized void putChunk(Chunk chunk) {
