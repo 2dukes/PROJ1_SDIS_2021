@@ -190,14 +190,22 @@ public class PeerStorage implements Serializable {
 
     public void restoreFile(String filePath, int numberOfExpectedChunks) {
         try {
-            System.out.println("Restored Size " + this.restoredChunks.size());
-            System.out.println("Number of Expected " + numberOfExpectedChunks);
+
+
+            String fileId = getFileByPath(filePath).getId();
+            int fileRestoredChunksSize = 0;
 
             for (int i = 0; i < this.restoredChunks.size(); i++) {
-                System.out.println("Chunk Number " + this.restoredChunks.get(i).getChunkNo());
+                if(this.restoredChunks.get(i).getFileId().equals(fileId)) {
+                    System.out.println("Chunk Number " + this.restoredChunks.get(i).getChunkNo());
+                    fileRestoredChunksSize++;
+                }
             }
 
-            if(this.restoredChunks.size() != numberOfExpectedChunks)
+            System.out.println("Restored Size " + fileRestoredChunksSize);
+            System.out.println("Number of Expected " + numberOfExpectedChunks);
+
+            if(fileRestoredChunksSize != numberOfExpectedChunks)
                 throw new Exception("Insufficient number of chunks provided.");
 
             String[] pathArray = filePath.split("/");
@@ -213,9 +221,10 @@ public class PeerStorage implements Serializable {
             System.out.println("Restoring file...");
             FileOutputStream file = new FileOutputStream(fileName);
 
-            for(int i = 0; i < this.restoredChunks.size(); i++)
-                file.write(this.restoredChunks.get(i).getData(), 0, this.restoredChunks.get(i).getData().length);
-
+            for(int i = 0; i < this.restoredChunks.size(); i++) {
+                if(this.restoredChunks.get(i).getFileId().equals(fileId))
+                    file.write(this.restoredChunks.get(i).getData(), 0, this.restoredChunks.get(i).getData().length);
+            }
 
             file.close();
 

@@ -3,9 +3,11 @@ package responseManager;
 import macros.Macros;
 import peer.Peer;
 
+import javax.crypto.Mac;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.sql.SQLOutput;
 
 public class SendChunk implements Runnable {
     private String version;
@@ -44,11 +46,18 @@ public class SendChunk implements Runnable {
             if(this.version.equals("2.0")) {
                 // TCP connection with Initiator
 
-                Socket clientSocket = new Socket(this.IP, Macros.TCP_PORT);
-                // https://stackoverflow.com/questions/2878867/how-to-send-an-array-of-bytes-over-a-tcp-connection-java-programming
-                DataOutputStream outBuf = new DataOutputStream(clientSocket.getOutputStream());
-                outBuf.writeInt(message.length);
-                outBuf.write(message, 0, message.length);
+                Peer.semaphore.acquire();
+                try {
+                    Socket clientSocket = new Socket(this.IP, Macros.TCP_PORT);
+                    // https://stackoverflow.com/questions/2878867/how-to-send-an-array-of-bytes-over-a-tcp-connection-java-programming
+                    DataOutputStream outBuf = new DataOutputStream(clientSocket.getOutputStream());
+                    outBuf.writeInt(message.length);
+                    outBuf.write(message, 0, message.length);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                } finally {
+                    Peer.semaphore.release();
+                }
             }
 
 
@@ -57,7 +66,7 @@ public class SendChunk implements Runnable {
             System.out.format("SENT CHUNK version=%s senderId=%s fileId=%s chunkNo=%s \n",
                     this.version, Peer.id, this.fileId, this.chunkNo);
 
-        } catch(IOException e) {
+        } catch(IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
     }

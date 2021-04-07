@@ -35,6 +35,7 @@ public class Chunk extends MessageManager {
                 return;
 
             peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, this.body, 0);
+
             Peer.storage.addRestoredChunk(chunk);
 
             System.out.format("RECEIVED CHUNK version=%s senderId=%s fileId=%s chunkNo=%s\n",

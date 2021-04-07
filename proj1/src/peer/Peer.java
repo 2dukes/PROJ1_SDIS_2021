@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class Peer implements RMIService {
@@ -31,6 +32,7 @@ public class Peer implements RMIService {
     public static MDRChannel mdrChannel;
     public static PeerStorage storage;
     public static ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    public static Semaphore semaphore;
 
     public Peer(String IP_MC, int PORT_MC, String IP_MDB, int PORT_MDB, String IP_MDR, int PORT_MDR) throws SocketException, UnknownHostException {
         mcChannel = new MCChannel(IP_MC, PORT_MC);
@@ -38,6 +40,7 @@ public class Peer implements RMIService {
         mdrChannel = new MDRChannel(IP_MDR, PORT_MDR);
         scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(Macros.NUM_THREADS);
         isInitiator = false;
+        semaphore = new Semaphore(1, true);
     }
 
     public static void main(String[] args) {
@@ -141,7 +144,7 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mdbChannel.send(message);
-            Thread.sleep(10);
+            Thread.sleep(25);
             scheduledThreadPoolExecutor.schedule(new manageThreads.PutChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
@@ -182,9 +185,9 @@ public class Peer implements RMIService {
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
         if(this.version.equals("2.0"))
-            Thread.sleep(1000 + fileChunksSize * 50);
+            Thread.sleep(1000 + fileChunksSize * 60);
         else
-            Thread.sleep(fileChunksSize * 60);
+            Thread.sleep(1000 + fileChunksSize * 200);
 
         // Sort receivedChunks
         storage.getRestoredChunks().sort(Chunk::compareTo);
