@@ -74,7 +74,7 @@ public class Peer implements RMIService {
         scheduledThreadPoolExecutor.execute(mdbChannel);
         scheduledThreadPoolExecutor.execute(mcChannel);
         scheduledThreadPoolExecutor.execute(mdrChannel);
-        System.out.print("Hello :) g");
+        System.out.print("Hello :) ");
         System.out.println("My id: " + id);
     }
 
@@ -167,6 +167,9 @@ public class Peer implements RMIService {
         int fileChunksSize = peerFile.getChunks().size();
         mdrChannel.setDesiredFileId(peerFile.getId());
 
+        if(version.equals("2.0")) // Restore Enhancement
+            scheduledThreadPoolExecutor.execute(new messageManager.ReceiveChunkTCP());
+
         for(int i = 0; i < fileChunksSize; i++) {
             int chunkNo = i + 1;
             String messageStr = this.version + " GETCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + "\r\n\r\n";
@@ -178,8 +181,10 @@ public class Peer implements RMIService {
             scheduledThreadPoolExecutor.schedule(new manageThreads.GetChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
-
-        Thread.sleep(fileChunksSize * 50);
+        if(this.version.equals("2.0"))
+            Thread.sleep(1000 + fileChunksSize * 50);
+        else
+            Thread.sleep(fileChunksSize * 60);
 
         // Sort receivedChunks
         storage.getRestoredChunks().sort(Chunk::compareTo);

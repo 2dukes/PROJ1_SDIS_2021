@@ -19,7 +19,7 @@ public class MDRChannel extends Channel {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
             case "CHUNK":
-                peer.Peer.scheduledThreadPoolExecutor.execute(new Chunk(data, desiredFileId));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new Chunk(data, this.desiredFileId));
                 break;
             default:
                 System.err.println("MDR Channel message type error:" + msgType);
@@ -29,4 +29,5 @@ public class MDRChannel extends Channel {
     public void setDesiredFileId(String desiredFileId) {
         this.desiredFileId = desiredFileId;
     }
+
 }

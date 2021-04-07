@@ -20,7 +20,7 @@ public class MCChannel extends Channel {
         String msgType = new String(data).trim().split(" ")[1];
         switch (msgType) {
             case "GETCHUNK":
-                peer.Peer.scheduledThreadPoolExecutor.execute(new GetChunk(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new GetChunk(data, this.getPacket().getAddress()));
                 break;
             case "DELETE":
                 peer.Peer.scheduledThreadPoolExecutor.execute(new Delete(data));

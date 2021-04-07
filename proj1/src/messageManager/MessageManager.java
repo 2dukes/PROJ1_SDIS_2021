@@ -32,6 +32,8 @@ public abstract class MessageManager implements Runnable {
         parseSpecificParameters();
     }
 
+    public MessageManager() { }
+
     // <Version> <MessageType> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
     public void parseMessage(byte[] data) throws Exception {
         // CR - 0x0D

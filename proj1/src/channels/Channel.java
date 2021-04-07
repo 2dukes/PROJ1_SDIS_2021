@@ -8,6 +8,7 @@ public abstract class Channel implements Runnable {
     private InetAddress destination;
     private String IP;
     private int port;
+    private DatagramPacket packet;
 
     public Channel(String IP, int port) throws SocketException, UnknownHostException {
         this.IP = IP;
@@ -31,7 +32,7 @@ public abstract class Channel implements Runnable {
 
     public abstract void handleMessageType(byte[] data);
 
-        @Override
+    @Override
     public void run() {
         byte[] inbuf = new byte[70000];
 
@@ -43,11 +44,12 @@ public abstract class Channel implements Runnable {
             // SocketAddress sockAdr = new InetSocketAddress(this.IP, this.port);
             //multicastSocket.joinGroup(sockAdr, netInterface);
             while(true) {
-                DatagramPacket packet = new DatagramPacket(inbuf, inbuf.length);
-                multicastSocket.receive(packet);
+                this.packet = new DatagramPacket(inbuf, inbuf.length);
+                multicastSocket.receive(this.packet);
 
-                byte[] data = new byte[packet.getLength()];
-                System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
+
+                byte[] data = new byte[this.packet.getLength()];
+                System.arraycopy(this.packet.getData(), this.packet.getOffset(), data, 0, this.packet.getLength());
 
                 handleMessageType(data);
 
@@ -66,4 +68,6 @@ public abstract class Channel implements Runnable {
     public int getPort() {
         return port;
     }
+
+    public DatagramPacket getPacket() { return packet; }
 }

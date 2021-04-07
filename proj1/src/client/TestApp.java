@@ -19,11 +19,9 @@ public class TestApp {
             String host = firstArgs[0];
             String accessPoint = firstArgs[1];
             String subProtocol = args[1];
-            System.out.println("RMI 1");
             Registry registry = LocateRegistry.getRegistry(host);
             RMIService initiatorPeer = (RMIService) registry.lookup(accessPoint);
             initiatorPeer.setInitiator(true);
-            System.out.println("RMI 2");
 
             String path;
             switch (subProtocol) {

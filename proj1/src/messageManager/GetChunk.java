@@ -5,14 +5,19 @@ import peer.Chunk;
 import peer.Peer;
 import responseManager.SendChunk;
 
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class GetChunk extends MessageManager {
     private int chunkNo;
-    public GetChunk(byte[] data) {
+    private InetAddress IP;
+
+    public GetChunk(byte[] data, InetAddress IP) {
         super(data);
+        this.IP = IP;
     }
 
     @Override
@@ -28,7 +33,7 @@ public class GetChunk extends MessageManager {
                 return;
 
             Peer.scheduledThreadPoolExecutor.schedule(new SendChunk(this.version, this.fileId,
-                    this.chunkNo, chunk.getData()), new Random().nextInt(401), TimeUnit.MILLISECONDS);
+                    this.chunkNo, chunk.getData(), this.IP), new Random().nextInt(401), TimeUnit.MILLISECONDS);
         }
     }
 }
