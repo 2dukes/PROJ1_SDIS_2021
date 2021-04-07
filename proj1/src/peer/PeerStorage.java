@@ -18,11 +18,16 @@ public class PeerStorage implements Serializable {
     // Value: fileId chunkNo
     private Set<String> receivedRemovedPutChunks;
 
+    // Key: fileId chunkNo
+    // Value: Number of times the chunk was stored
+    private ConcurrentHashMap<String, Integer> numberOfStoredChunks;
+
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
         this.restoredChunks = new ArrayList<>();
         this.chunks = new ConcurrentHashMap<>();
         this.receivedRemovedPutChunks = new HashSet<>();
+        this.numberOfStoredChunks = new ConcurrentHashMap<>();
     }
 
     public synchronized void addFile(PeerFile peerFile) {
@@ -159,6 +164,7 @@ public class PeerStorage implements Serializable {
                 String id = this.chunks.get(key).getFileId();
                 if (id.equals(fileId)) {
                     this.chunks.remove(id);
+                    decrementStoredMessage(key);
                     deleteChunkFile(key);
                 }
             }
@@ -235,6 +241,25 @@ public class PeerStorage implements Serializable {
             deleteChunkFile(key);
         } catch(Exception e) {
             System.err.println(e.getMessage());
+        }
+    }
+
+    public synchronized ConcurrentHashMap<String, Integer> getNumberOfStoredChunks() {
+        return this.numberOfStoredChunks;
+    }
+
+    public synchronized void incrementStoredMessage(String chunkKey) {
+        if (this.numberOfStoredChunks.containsKey(chunkKey))
+            this.numberOfStoredChunks.put(chunkKey, this.numberOfStoredChunks.get(chunkKey) + 1);
+        else
+            this.numberOfStoredChunks.put(chunkKey, 1);
+    }
+
+    public synchronized void decrementStoredMessage(String chunkKey) {
+        if (this.numberOfStoredChunks.containsKey(chunkKey)) {
+            this.numberOfStoredChunks.put(chunkKey, this.numberOfStoredChunks.get(chunkKey) - 1);
+            if(this.numberOfStoredChunks.get(chunkKey) == 0)
+                this.numberOfStoredChunks.remove(chunkKey);
         }
     }
 }

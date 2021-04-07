@@ -41,16 +41,10 @@ public class PutChunk extends MessageManager {
                 return;
 
             if(Peer.storage.getAvailableStorage() - Peer.storage.getTotalStorage() >= body.length) {
-                peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, body, this.replicationDeg);
-
-                Peer.storage.putChunk(chunk);
-
-                createChunkFile(chunk.getData());
-                Peer.storage.incrementChunkReplicationDeg(chunkKey);
 
                 System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                         this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
-                Peer.scheduledThreadPoolExecutor.schedule(new SendStored(this.version, this.fileId, this.chunkNo),
+                Peer.scheduledThreadPoolExecutor.schedule(new SendStored(this.version, this.fileId, this.chunkNo, this.replicationDeg, this.body),
                         new Random().nextInt(401), TimeUnit.MILLISECONDS);
             }
 
@@ -63,29 +57,5 @@ public class PutChunk extends MessageManager {
 
     public int getReplicationDeg() {
         return replicationDeg;
-    }
-
-    public void createChunkFile(byte[] data) {
-        try {
-            String fileName = "src/files/chunks/" + Peer.id + "/" + this.chunkKey;
-
-            File f = new File(fileName);
-            if(!f.exists()) {
-                f.getParentFile().mkdirs();
-                f.createNewFile();
-            }
-
-            System.out.println("Creating file....");
-
-            FileOutputStream file = new FileOutputStream(fileName);
-//          System.out.println(data.length);
-            file.write(data, 0, data.length);
-            file.close();
-
-            System.out.println("DONE");
-        }
-        catch(IOException e) {
-            System.err.println("Exception was caught: " + e.toString());
-        }
     }
 }

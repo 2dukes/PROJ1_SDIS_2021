@@ -16,8 +16,10 @@ public class Stored extends MessageManager {
 
     @Override
     public void run() {
+        String chunkKey = this.fileId + " " + this.chunkNo;
+        Peer.storage.incrementStoredMessage(chunkKey);
+
         if(Peer.id != this.senderId) {
-            String chunkKey = this.fileId + " " + this.chunkNo;
             Peer.storage.incrementChunkReplicationDeg(chunkKey);
 
             System.out.format("RECEIVED STORED version=%s senderId=%s fileId=%s chunkNo=%s\n",

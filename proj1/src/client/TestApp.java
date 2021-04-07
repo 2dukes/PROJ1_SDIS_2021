@@ -28,10 +28,12 @@ public class TestApp {
             String path;
             switch (subProtocol) {
                 case "BACKUP":
-                    System.out.println("Backing up...");
                     path = args[2].trim();
                     int replicationDeg = Integer.parseInt(args[3]);
-                    initiatorPeer.backup(path, replicationDeg);
+                    if(replicationDeg > 0) {
+                        System.out.println("Backing up...");
+                        initiatorPeer.backup(path, replicationDeg);
+                    }
                     break;
                 case "RECLAIM":
                     System.out.println("Reclaiming Space...");

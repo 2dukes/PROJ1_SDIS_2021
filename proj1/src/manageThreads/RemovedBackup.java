@@ -7,12 +7,14 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class RemovedBackup implements Runnable {
+    private String version;
     private String fileId;
     private int chunkNo;
     private int desiredReplicationDeg;
     private byte[] data;
 
-    public RemovedBackup(String fileId, int chunkNo, int desiredReplicationDeg, byte[] data) {
+    public RemovedBackup(String version, String fileId, int chunkNo, int desiredReplicationDeg, byte[] data) {
+        this.version = version;
         this.fileId = fileId;
         this.chunkNo = chunkNo;
         this.desiredReplicationDeg = desiredReplicationDeg;

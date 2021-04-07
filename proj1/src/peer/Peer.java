@@ -130,7 +130,7 @@ public class Peer implements RMIService {
         for(int i = 0; i < fileChunks.size(); i++) {
             Chunk chunk = fileChunks.get(i);
             int chunkNo = i + 1;
-            String messageStr = "1.0 PUTCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + " " + replicationDeg + "\r\n\r\n"; // HardCoded ID
+            String messageStr = this.version + " PUTCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + " " + replicationDeg + "\r\n\r\n"; // HardCoded ID
 
             byte[] header = messageStr.getBytes();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -150,7 +150,7 @@ public class Peer implements RMIService {
     public void delete(String path) throws RemoteException {
         try {
             PeerFile peerFile = storage.getFileByPath(path);
-            String messageStr = "1.0 DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
+            String messageStr = this.version + " DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
 
             byte[] header = messageStr.getBytes();
 
@@ -169,7 +169,7 @@ public class Peer implements RMIService {
 
         for(int i = 0; i < fileChunksSize; i++) {
             int chunkNo = i + 1;
-            String messageStr = "1.0 GETCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + "\r\n\r\n";
+            String messageStr = this.version + " GETCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + "\r\n\r\n";
 
             byte[] message = messageStr.getBytes();
 
@@ -205,7 +205,8 @@ public class Peer implements RMIService {
                 storage.removeChunk(chunk.getKey());
                 removed += chunk.getData().length;
 
-                String messageStr = "1.0 REMOVED " + id + " " + chunk.getFileId() + " " + chunk.getChunkNo() + "\r\n\r\n";
+                Peer.storage.decrementStoredMessage(chunk.getKey());
+                String messageStr = this.version + " REMOVED " + id + " " + chunk.getFileId() + " " + chunk.getChunkNo() + "\r\n\r\n";
 
                 byte[] message = messageStr.getBytes();
 

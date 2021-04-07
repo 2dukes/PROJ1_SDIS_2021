@@ -26,11 +26,13 @@ public class Removed extends MessageManager {
             if(chunk == null)
                 return;
 
-            Peer.storage.decrementChunkReplicationDeg(this.fileId + " " + this.chunkNo);
+            String chunkKey = this.fileId + " " + this.chunkNo;
+            Peer.storage.decrementChunkReplicationDeg(chunkKey);
             Peer.storage.deleteRemovedPutChunk(chunk.getKey());
+            Peer.storage.decrementStoredMessage(chunkKey);
 
             if (chunk.getCurrentReplicationDegree() < chunk.getDesiredReplicationDegree()) {
-                Peer.scheduledThreadPoolExecutor.schedule(new manageThreads.RemovedBackup(this.fileId,
+                Peer.scheduledThreadPoolExecutor.schedule(new manageThreads.RemovedBackup(this.version, this.fileId,
                         this.chunkNo, chunk.getDesiredReplicationDegree(), chunk.getData()),
                         new Random().nextInt(401), TimeUnit.MILLISECONDS);
             }
