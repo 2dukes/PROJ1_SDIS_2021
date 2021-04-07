@@ -23,5 +23,6 @@ public class Stored extends MessageManager {
             System.out.format("RECEIVED STORED version=%s senderId=%s fileId=%s chunkNo=%s\n",
                     this.version, this.senderId, this.fileId, this.chunkNo);
         }
+
     }
 }

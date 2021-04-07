@@ -165,6 +165,7 @@ public class Peer implements RMIService {
     public void restore(String path) throws Exception {
         PeerFile peerFile = storage.getFileByPath(path);
         int fileChunksSize = peerFile.getChunks().size();
+        mdrChannel.setDesiredFileId(peerFile.getId());
 
         for(int i = 0; i < fileChunksSize; i++) {
             int chunkNo = i + 1;
@@ -178,7 +179,7 @@ public class Peer implements RMIService {
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
 
-        Thread.sleep(fileChunksSize * 20);
+        Thread.sleep(fileChunksSize * 50);
 
         // Sort receivedChunks
         storage.getRestoredChunks().sort(Chunk::compareTo);

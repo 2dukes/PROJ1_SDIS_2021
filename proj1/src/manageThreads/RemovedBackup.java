@@ -23,7 +23,7 @@ public class RemovedBackup implements Runnable {
     public void run() {
         String value = this.fileId + " " + this.chunkNo;
         if(!Peer.storage.getRemovedPutChunks().contains(value)) {
-            String messageStr = "1.0 PUTCHUNK " + Peer.id + " " + this.fileId + " " + this.chunkNo + " " + this.desiredReplicationDeg + "\r\n\r\n"; // HardCoded ID
+            String messageStr = "1.0 PUTCHUNK " + Peer.id + " " + this.fileId + " " + this.chunkNo + " " + this.desiredReplicationDeg + "\r\n\r\n";
 
             byte[] header = messageStr.getBytes();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -40,8 +40,7 @@ public class RemovedBackup implements Runnable {
             Peer.mdbChannel.send(message);
             Peer.scheduledThreadPoolExecutor.schedule(new manageThreads.PutChunk(message,
                     this.fileId, chunkNo), 1, TimeUnit.SECONDS);
-
-            Peer.storage.deleteRemovedPutChunk(value);
         }
+        Peer.storage.deleteRemovedPutChunk(value);
     }
 }

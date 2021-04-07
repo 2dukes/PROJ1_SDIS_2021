@@ -22,9 +22,6 @@ public class Removed extends MessageManager {
     @Override
     public void run() {
         if (Peer.id != this.senderId) {
-            if(Peer.isInitiator)
-                return;
-
             peer.Chunk chunk = Peer.storage.getChunk(this.fileId, this.chunkNo);
             if(chunk == null)
                 return;

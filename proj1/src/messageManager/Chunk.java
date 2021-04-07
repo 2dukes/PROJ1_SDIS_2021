@@ -4,8 +4,11 @@ import peer.Peer;
 
 public class Chunk extends MessageManager {
     private int chunkNo;
-    public Chunk(byte[] data) {
+    private String desiredFileId;
+
+    public Chunk(byte[] data, String desiredFileId) {
         super(data);
+        this.desiredFileId = desiredFileId;
     }
 
     @Override
@@ -22,6 +25,9 @@ public class Chunk extends MessageManager {
                     return;
             }
           //  System.out.println("Chunk=" + this.chunkNo);
+            if(!(desiredFileId.equals(this.fileId) && Peer.isInitiator))
+                return;
+
             peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, this.body, 0);
             Peer.storage.addRestoredChunk(chunk);
 

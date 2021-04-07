@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class PutChunk extends MessageManager {
     private int chunkNo;
     private int replicationDeg;
-    String chunkKey;
+    private String chunkKey;
 
     public PutChunk(byte[] data) {
         super(data);
@@ -46,6 +46,7 @@ public class PutChunk extends MessageManager {
                 Peer.storage.putChunk(chunk);
 
                 createChunkFile(chunk.getData());
+                Peer.storage.incrementChunkReplicationDeg(chunkKey);
 
                 System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                         this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
