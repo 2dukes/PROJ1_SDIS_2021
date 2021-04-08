@@ -1,5 +1,6 @@
 package peer;
 
+import Exceptions.FileModifiedException;
 import channels.MCChannel;
 import channels.MDBChannel;
 import channels.MDRChannel;
@@ -8,6 +9,11 @@ import macros.Macros;
 import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.UserPrincipal;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -125,8 +131,32 @@ public class Peer implements RMIService {
     }
 
     public void backup(String path, int replicationDeg) throws IOException, NoSuchAlgorithmException, RemoteException, InterruptedException {
+        PeerFile peerFile = null;
 
-        PeerFile peerFile = new PeerFile(path, replicationDeg, Peer.id);
+        try {
+            peerFile = new PeerFile(path, replicationDeg, Peer.id);
+            String fileWithPathId = peerFile.getId();
+            for (int i = 0; i < storage.getPeerFiles().size(); i++) {
+                if(storage.getPeerFiles().get(i).getPath().equals(path)) {
+                    if(!storage.getPeerFiles().get(i).getId().equals(fileWithPathId))
+                        throw new FileModifiedException("The file you're looking for was modified. Initiating (old) chunks delete protocol...");
+                }
+            }
+        } catch (IOException e) { // File doesn't exist or was deleted
+            System.out.println("The file you're looking for doesn't exist!");
+            for (int i = 0; i < storage.getPeerFiles().size(); i++) {
+                if (storage.getPeerFiles().get(i).getPath().equals(path)) {
+                    System.out.println("Deleting the chunks of the file with path " + path);
+                    delete(path);
+                    return;
+                }
+            }
+            return;
+        } catch (FileModifiedException e){
+            System.out.println(e.getMessage());
+            delete(path);
+        }
+
         List<Chunk> fileChunks = peerFile.getChunks();
         Peer.storage.addFile(peerFile);
 
@@ -152,13 +182,18 @@ public class Peer implements RMIService {
 
     public void delete(String path) throws RemoteException {
         try {
+
             PeerFile peerFile = storage.getFileByPath(path);
             String messageStr = this.version + " DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
 
             byte[] header = messageStr.getBytes();
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++) {
                 mcChannel.send(header);
+                Thread.sleep(10);
+            }
+
+            storage.removeFileByPath(path);
 
         } catch (Exception e) {
             System.err.println(e.getMessage());

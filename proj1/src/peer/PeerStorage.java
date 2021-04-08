@@ -271,4 +271,12 @@ public class PeerStorage implements Serializable {
                 this.numberOfStoredChunks.remove(chunkKey);
         }
     }
+
+    public void removeFileByPath(String path) {
+        for (PeerFile file: peerFiles)
+            if (file.getPath().equals(path)) {
+                peerFiles.remove(file);
+                return;
+            }
+    }
 }
