@@ -14,9 +14,11 @@ import peer.Peer;
 
 public class ReceiveChunkTCP extends MessageManager {
     private int chunkNo;
+    private String fileId;
 
-    public ReceiveChunkTCP() {
+    public ReceiveChunkTCP(String fileId) {
         super();
+        this.fileId = fileId;
     }
 
     @Override
@@ -27,7 +29,8 @@ public class ReceiveChunkTCP extends MessageManager {
     @Override
     public void run() {
         try {
-            ServerSocket serverSocket = new ServerSocket(Macros.TCP_PORT);
+            int TCP_Port = Peer.storage.getFilePort(this.fileId);
+            ServerSocket serverSocket = new ServerSocket(TCP_Port);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 // https://stackoverflow.com/questions/2878867/how-to-send-an-array-of-bytes-over-a-tcp-connection-java-programming
@@ -50,8 +53,6 @@ public class ReceiveChunkTCP extends MessageManager {
                 System.out.format("RECEIVED CHUNK [TCP] version=%s senderId=%s fileId=%s chunkNo=%s\n",
                         this.version, this.senderId, this.fileId, this.chunkNo);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,11 +3,9 @@ package responseManager;
 import macros.Macros;
 import peer.Peer;
 
-import javax.crypto.Mac;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.sql.SQLOutput;
 
 public class SendChunk implements Runnable {
     private String version;
@@ -48,7 +46,8 @@ public class SendChunk implements Runnable {
 
                 Peer.semaphore.acquire();
                 try {
-                    Socket clientSocket = new Socket(this.IP, Macros.TCP_PORT);
+                    int TCP_Port = Peer.storage.getFilePort(this.fileId);
+                    Socket clientSocket = new Socket(this.IP, TCP_Port);
                     // https://stackoverflow.com/questions/2878867/how-to-send-an-array-of-bytes-over-a-tcp-connection-java-programming
                     DataOutputStream outBuf = new DataOutputStream(clientSocket.getOutputStream());
                     outBuf.writeInt(message.length);

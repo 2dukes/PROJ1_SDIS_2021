@@ -2,6 +2,7 @@ package channels;
 
 import macros.Macros;
 import messageManager.Chunk;
+import messageManager.TCP_Port;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -20,6 +21,9 @@ public class MDRChannel extends Channel {
         switch (msgType) {
             case "CHUNK":
                 peer.Peer.scheduledThreadPoolExecutor.execute(new Chunk(data, this.desiredFileId));
+                break;
+            case "TCP_PORT":
+                peer.Peer.scheduledThreadPoolExecutor.execute(new TCP_Port(data));
                 break;
             default:
                 System.err.println("MDR Channel message type error:" + msgType);

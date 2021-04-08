@@ -28,7 +28,7 @@ public class GetChunk implements Runnable {
         if(this.counter++ < 5) {
             Chunk chunk = new Chunk(this.fileId, this.chunkNo, null, 0);
             if(!Peer.storage.getRestoredChunks().contains(chunk)) {
-                this.time *= 2;
+                this.time *= 3;
                 Peer.mcChannel.send(message);
                 System.out.format("Sent GETCHUNK Retry [%d] for Chunk [fileId=%s | chunkNo=%d]\n", this.counter, this.fileId, this.chunkNo);
                 Peer.scheduledThreadPoolExecutor.schedule(this, this.time, TimeUnit.SECONDS);

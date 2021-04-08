@@ -19,6 +19,10 @@ public class PeerStorage implements Serializable {
     private Set<String> receivedRemovedPutChunks;
 
     // Key: fileId chunkNo
+    // Value: TCP Port
+    private ConcurrentHashMap<String, Integer> filePorts;
+
+    // Key: fileId chunkNo
     // Value: Number of times the chunk was stored
     private ConcurrentHashMap<String, Integer> numberOfStoredChunks;
 
@@ -28,6 +32,7 @@ public class PeerStorage implements Serializable {
         this.chunks = new ConcurrentHashMap<>();
         this.receivedRemovedPutChunks = new HashSet<>();
         this.numberOfStoredChunks = new ConcurrentHashMap<>();
+        this.filePorts = new ConcurrentHashMap<>();
     }
 
     public synchronized void addFile(PeerFile peerFile) {
@@ -278,5 +283,32 @@ public class PeerStorage implements Serializable {
                 peerFiles.remove(file);
                 return;
             }
+    }
+
+    public synchronized ConcurrentHashMap<String, Integer> getFilePorts() {
+        return this.filePorts;
+    }
+
+    public synchronized int getFilePort(String fileId) throws Exception {
+
+        /*for (String key : this.filePorts.keySet()) {
+            System.out.println("PORT::::");
+            System.out.println(key);
+            System.out.println(this.filePorts.get(key));
+            System.out.println("--------------");
+        }1*/
+
+        if (this.filePorts.containsKey(fileId))
+            return this.filePorts.get(fileId);
+        throw new Exception("Port does not exist for file with id " + fileId);
+    }
+
+    public synchronized void addFilePort(String fileId, int port) {
+        try {
+            if (!this.filePorts.containsKey(fileId))
+                this.filePorts.put(fileId, port);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

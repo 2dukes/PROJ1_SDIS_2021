@@ -5,6 +5,7 @@ import channels.MCChannel;
 import channels.MDBChannel;
 import channels.MDRChannel;
 import macros.Macros;
+import responseManager.SendTCPPorts;
 
 import java.io.*;
 import java.net.SocketException;
@@ -174,9 +175,10 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mdbChannel.send(message);
-            Thread.sleep(25);
+            Thread.sleep(15);
             scheduledThreadPoolExecutor.schedule(new manageThreads.PutChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
+
         }
     }
 
@@ -203,10 +205,16 @@ public class Peer implements RMIService {
     public void restore(String path) throws Exception {
         PeerFile peerFile = storage.getFileByPath(path);
         int fileChunksSize = peerFile.getChunks().size();
-        mdrChannel.setDesiredFileId(peerFile.getId());
+        String desiredFileId = peerFile.getId();
+        mdrChannel.setDesiredFileId(desiredFileId);
 
-        if(version.equals("2.0")) // Restore Enhancement
-            scheduledThreadPoolExecutor.execute(new messageManager.ReceiveChunkTCP());
+        if(version.equals("2.0")) { // Restore Enhancement
+            int port = SendTCPPorts.findAvailablePort();
+            Peer.storage.addFilePort(desiredFileId, port);
+            scheduledThreadPoolExecutor.execute(new SendTCPPorts(version, desiredFileId, port));
+            Thread.sleep(1000);
+            scheduledThreadPoolExecutor.execute(new messageManager.ReceiveChunkTCP(desiredFileId));
+        }
 
         for(int i = 0; i < fileChunksSize; i++) {
             int chunkNo = i + 1;
@@ -221,8 +229,11 @@ public class Peer implements RMIService {
         }
         if(this.version.equals("2.0"))
             Thread.sleep(1000 + fileChunksSize * 60);
-        else
-            Thread.sleep(1000 + fileChunksSize * 200);
+        else {
+            if(fileChunksSize > 150)
+                Thread.sleep(1000 + fileChunksSize * 60 + 20000);
+            Thread.sleep(1000 + fileChunksSize * 60);
+        }
 
         // Sort receivedChunks
         storage.getRestoredChunks().sort(Chunk::compareTo);
