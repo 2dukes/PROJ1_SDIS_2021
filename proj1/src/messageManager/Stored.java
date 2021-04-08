@@ -23,8 +23,9 @@ public class Stored extends MessageManager {
         Peer.storage.incrementStoredMessage(chunkKey);
 
         if(Peer.id != this.senderId) {
-            if(this.version.equals("2.0") && Peer.isInitiator && this.desiredFileId != null && this.desiredFileId.equals(this.fileId))
+            if(this.version.equals("2.0") && Peer.isInitiator && this.desiredFileId != null && this.desiredFileId.equals(this.fileId)) {
                 Peer.storage.addPeerBackingUp(this.fileId, this.senderId);
+            }
 
 
             Peer.storage.incrementChunkReplicationDeg(chunkKey);

@@ -35,13 +35,14 @@ public class ReceivedON extends MessageManager {
             String messageStr = this.version + " DELETE " + Peer.id + " " + fileId + "\r\n\r\n";
             Peer.mcChannel.setDesiredFileId(fileId);
 
-            System.out.println(messageStr);
 
             byte[] header = messageStr.getBytes();
 
             for (int i = 0; i < 5; i++) {
-                if(this.version.equals("2.0") && Peer.storage.getPeersBackingUp().get(fileId).size() == 0)
+                if(this.version.equals("2.0") && Peer.storage.getPeersBackingUp().containsKey(fileId) && Peer.storage.getPeersBackingUp().get(fileId).size() == 0)
                     break;
+                else
+                    System.out.println(messageStr);
 
                 Peer.mcChannel.send(header);
                 Thread.sleep(10);

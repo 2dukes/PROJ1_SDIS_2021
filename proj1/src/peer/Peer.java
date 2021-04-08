@@ -71,16 +71,7 @@ public class Peer implements RMIService {
         }
 
         storage = new PeerStorage();
-
-//        PeerFile peerFile = new PeerFile("src/files/hello.txt", 2, id);
-//        storage.peerFiles.add(peerFile);
-
-        //deserializeStorage();
-
-        // https://stackoverflow.com/questions/1611931/catching-ctrlc-in-java
-        //Runtime.getRuntime().addShutdownHook(new Thread(Peer::serializeStorage));
-        // deserializeStorage();
-
+        deserializeStorage();
 
         scheduledThreadPoolExecutor.execute(mdbChannel);
         scheduledThreadPoolExecutor.execute(mcChannel);
@@ -91,10 +82,14 @@ public class Peer implements RMIService {
 
         System.out.print("Hello :) ");
         System.out.println("My id: " + id);
+
+        // https://stackoverflow.com/questions/1611931/catching-ctrlc-in-java
+        Runtime.getRuntime().addShutdownHook(new Thread(Peer::serializeStorage));
     }
 
     public static void serializeStorage() {
         try {
+            System.out.println("\n\nSaving Peer's content...");
             String fileName = "src/files/" + Peer.id + "/peerStorage.ser";
 
             File f = new File(fileName);
@@ -123,6 +118,7 @@ public class Peer implements RMIService {
 
     public static void deserializeStorage() {
         try  {
+            System.out.println("\n\nLoading Peer's content...");
             String fileName = "src/files/" + Peer.id + "/peerStorage.ser";
             File f = new File(fileName);
             if(!f.exists())
@@ -198,13 +194,14 @@ public class Peer implements RMIService {
             String messageStr = this.version + " DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
             mcChannel.setDesiredFileId(peerFile.getId());
 
-            System.out.println(messageStr);
 
             byte[] header = messageStr.getBytes();
 
             for (int i = 0; i < 5; i++) {
-                if(this.version.equals("2.0") && storage.getPeersBackingUp().get(peerFile.getId()).size() == 0)
+                if(this.version.equals("2.0") && storage.getPeersBackingUp().containsKey(peerFile.getId()) && storage.getPeersBackingUp().get(peerFile.getId()).size() == 0)
                     break;
+                else
+                    System.out.println(messageStr);
 
                 mcChannel.send(header);
                 Thread.sleep(10);

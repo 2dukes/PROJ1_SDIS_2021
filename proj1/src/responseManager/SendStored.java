@@ -45,6 +45,7 @@ public class SendStored implements Runnable {
         Peer.storage.incrementChunkReplicationDeg(chunkKey);
         Peer.storage.incrementStoredMessage(chunkKey);
 
+
         System.out.format("SENT STORED version=%s senderId=%s fileId=%s chunkNo=%s \n",
                 this.version, Peer.id, this.fileId, this.chunkNo);
 

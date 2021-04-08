@@ -12,9 +12,10 @@ public class PeerStorage implements Serializable {
     private int availableStorage = (int) (5 * Math.pow(10, 9)); // ~ 5 GBytes
 
     // Key: fileId chunkNo
-    // Value: Number of times the chunk was stored
+    // Value: Chunk itself
     private ConcurrentHashMap<String, Chunk> chunks;
     private List<Chunk> restoredChunks;
+
     // Value: fileId chunkNo
     private Set<String> receivedRemovedPutChunks;
 
@@ -106,11 +107,9 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void incrementChunkReplicationDeg(String key) {
-        if(this.chunks.containsKey(key)) {
-            Chunk chunk = this.chunks.get(key);
-            chunk.incrementCurrentReplicationDegree();
-            this.chunks.put(key, chunk);
-        } else
+        if(this.chunks.containsKey(key))
+            this.chunks.get(key).incrementCurrentReplicationDegree();
+        else
             updatePeerFileChunkReplicationDeg(key);
     }
 
@@ -175,7 +174,7 @@ public class PeerStorage implements Serializable {
                 String id = this.chunks.get(key).getFileId();
                 if (id.equals(fileId)) {
                     hasDeleted = true;
-                    this.chunks.remove(id);
+                    this.chunks.remove(key);
                     decrementStoredMessage(key);
                     deleteChunkFile(key);
                 }
@@ -333,7 +332,8 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void removePeerBackingUp(String fileId, int peerId) {
-        if (this.peersBackingUp.containsKey(fileId))
+        if (this.peersBackingUp.containsKey(fileId)) {
             this.peersBackingUp.get(fileId).remove(Integer.valueOf(peerId)); // remove by object, not by index
+        }
     }
 }
