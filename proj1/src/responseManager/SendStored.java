@@ -59,7 +59,7 @@ public class SendStored implements Runnable {
 
     public void createChunkFile(byte[] data) {
         try {
-            String fileName = "src/files/chunks/" + Peer.id + "/" + this.chunkKey;
+            String fileName = "resources/peers/" + Peer.id + "/chunks/" + this.chunkKey;
 
             File f = new File(fileName);
             if(!f.exists()) {
