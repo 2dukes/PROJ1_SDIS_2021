@@ -26,6 +26,10 @@ public class PeerStorage implements Serializable {
     // Value: Number of times the chunk was stored
     private ConcurrentHashMap<String, Integer> numberOfStoredChunks;
 
+    // Key: fileId
+    // Value: Set of Peer Ids backing up the file chunks
+    private ConcurrentHashMap<String, Set<Integer>> peersBackingUp;
+
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
         this.restoredChunks = new ArrayList<>();
@@ -33,6 +37,7 @@ public class PeerStorage implements Serializable {
         this.receivedRemovedPutChunks = new HashSet<>();
         this.numberOfStoredChunks = new ConcurrentHashMap<>();
         this.filePorts = new ConcurrentHashMap<>();
+        this.peersBackingUp = new ConcurrentHashMap<>();
     }
 
     public synchronized void addFile(PeerFile peerFile) {
@@ -163,18 +168,22 @@ public class PeerStorage implements Serializable {
             System.out.format("Chunk [fileId=%s | chunkNo=%d] not present in peer.", fileId, chunkNo);
     }
 
-    public synchronized void deleteFileChunks(String fileId) {
+    public synchronized boolean deleteFileChunks(String fileId) {
         try {
+            boolean hasDeleted = false;
             for (String key : this.chunks.keySet()) {
                 String id = this.chunks.get(key).getFileId();
                 if (id.equals(fileId)) {
+                    hasDeleted = true;
                     this.chunks.remove(id);
                     decrementStoredMessage(key);
                     deleteChunkFile(key);
                 }
             }
+            return hasDeleted;
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            return false;
         }
     }
 
@@ -310,5 +319,21 @@ public class PeerStorage implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public synchronized ConcurrentHashMap getPeersBackingUp() {
+        return this.peersBackingUp;
+    }
+
+    public synchronized void addPeerBackingUp(String fileId, int peerId) {
+        if (!this.peersBackingUp.containsKey(fileId))
+            this.peersBackingUp.put(fileId, new HashSet<>(Arrays.asList(peerId)));
+        else
+            this.peersBackingUp.get(fileId).add(peerId);
+    }
+
+    public synchronized void removePeerBackingUp(String fileId, int peerId) {
+        if (this.peersBackingUp.containsKey(fileId))
+            this.peersBackingUp.get(fileId).remove(Integer.valueOf(peerId)); // remove by object, not by index
     }
 }

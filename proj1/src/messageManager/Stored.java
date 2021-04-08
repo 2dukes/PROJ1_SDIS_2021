@@ -4,9 +4,11 @@ import peer.Peer;
 
 public class Stored extends MessageManager {
     private int chunkNo;
+    private String desiredFileId;
 
-    public Stored(byte[] data) {
+    public Stored(byte[] data, String desiredFileId) {
         super(data);
+        this.desiredFileId = desiredFileId;
     }
 
     @Override
@@ -20,6 +22,10 @@ public class Stored extends MessageManager {
         Peer.storage.incrementStoredMessage(chunkKey);
 
         if(Peer.id != this.senderId) {
+            if(this.version.equals("2.0") && Peer.isInitiator && this.desiredFileId != null && this.desiredFileId.equals(this.fileId))
+                Peer.storage.addPeerBackingUp(this.fileId, this.senderId);
+
+
             Peer.storage.incrementChunkReplicationDeg(chunkKey);
 
             System.out.format("RECEIVED STORED version=%s senderId=%s fileId=%s chunkNo=%s\n",

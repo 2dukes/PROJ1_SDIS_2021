@@ -106,6 +106,10 @@ public class Peer implements RMIService {
 
             isInitiator = false;
             storage.getRemovedPutChunks().clear();
+            storage.getFilePorts().clear();
+            storage.getRestoredChunks().clear();
+            mcChannel.setDesiredFileId(null);
+            mdrChannel.setDesiredFileId(null);
         }
         catch(IOException e) {
             System.err.println("Exception was caught: " + e.toString());
@@ -160,6 +164,7 @@ public class Peer implements RMIService {
 
         List<Chunk> fileChunks = peerFile.getChunks();
         Peer.storage.addFile(peerFile);
+        mcChannel.setDesiredFileId(peerFile.getId());
 
         for(int i = 0; i < fileChunks.size(); i++) {
             Chunk chunk = fileChunks.get(i);
@@ -184,9 +189,9 @@ public class Peer implements RMIService {
 
     public void delete(String path) throws RemoteException {
         try {
-
             PeerFile peerFile = storage.getFileByPath(path);
             String messageStr = this.version + " DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
+            mcChannel.setDesiredFileId(peerFile.getId());
 
             byte[] header = messageStr.getBytes();
 
