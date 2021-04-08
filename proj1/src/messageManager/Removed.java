@@ -16,6 +16,7 @@ public class Removed extends MessageManager {
 
     @Override
     public void parseSpecificParameters() {
+        this.fileId = this.header[3];
         this.chunkNo = Integer.parseInt(this.header[4]);
     }
 

@@ -5,6 +5,7 @@ import channels.MCChannel;
 import channels.MDBChannel;
 import channels.MDRChannel;
 import macros.Macros;
+import responseManager.SendON;
 import responseManager.SendTCPPorts;
 
 import java.io.*;
@@ -84,6 +85,10 @@ public class Peer implements RMIService {
         scheduledThreadPoolExecutor.execute(mdbChannel);
         scheduledThreadPoolExecutor.execute(mcChannel);
         scheduledThreadPoolExecutor.execute(mdrChannel);
+
+        // Restore/Delete Enhancement - Warn other peers the this peer is ONLINE
+        scheduledThreadPoolExecutor.execute(new SendON(version, id));
+
         System.out.print("Hello :) ");
         System.out.println("My id: " + id);
     }
@@ -193,9 +198,14 @@ public class Peer implements RMIService {
             String messageStr = this.version + " DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
             mcChannel.setDesiredFileId(peerFile.getId());
 
+            System.out.println(messageStr);
+
             byte[] header = messageStr.getBytes();
 
             for (int i = 0; i < 5; i++) {
+                if(this.version.equals("2.0") && storage.getPeersBackingUp().get(peerFile.getId()).size() == 0)
+                    break;
+
                 mcChannel.send(header);
                 Thread.sleep(10);
             }

@@ -3,7 +3,7 @@ package responseManager;
 import messageManager.MessageManager;
 import peer.Peer;
 
-public class SendReceivedDelete extends MessageManager {
+public class SendReceivedDelete implements Runnable {
     private String version;
     private String fileId;
     private int senderId;
@@ -14,8 +14,6 @@ public class SendReceivedDelete extends MessageManager {
         this.fileId = fileId;
     }
 
-    @Override
-    public void parseSpecificParameters() { }
 
     @Override
     public void run() {

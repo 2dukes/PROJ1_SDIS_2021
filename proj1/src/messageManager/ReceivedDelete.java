@@ -17,7 +17,7 @@ public class ReceivedDelete extends MessageManager {
 
     @Override
     public void parseSpecificParameters() {
-
+        this.fileId = this.header[3];
     }
 
     @Override

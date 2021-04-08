@@ -22,6 +22,7 @@ public class PutChunk extends MessageManager {
     // <Version> PUTCHUNK <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
     @Override
     public void parseSpecificParameters() {
+        this.fileId = this.header[3];
         this.chunkNo = Integer.parseInt(this.header[4]);
         this.replicationDeg = Integer.parseInt(this.header[5]);
     }

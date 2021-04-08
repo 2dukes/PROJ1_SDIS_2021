@@ -49,7 +49,7 @@ public abstract class MessageManager implements Runnable {
                 this.body = Arrays.copyOfRange(data, index + 3, data.length);
                 this.header = new String(headerBytes).trim().split("\\s+");
 
-                if(this.header.length < 4)
+                if(this.header.length < 3)
                     throw new Exception("Poorly formatted header!");
 
                 return;
@@ -66,7 +66,6 @@ public abstract class MessageManager implements Runnable {
     public void parseCommonParameters() {
         this.version = this.header[0];
         this.senderId = Integer.parseInt(this.header[2]);
-        this.fileId = this.header[3];
     }
 
     public abstract void parseSpecificParameters();

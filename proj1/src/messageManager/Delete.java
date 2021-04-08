@@ -9,7 +9,9 @@ public class Delete extends MessageManager {
     }
 
     @Override
-    public void parseSpecificParameters() {}
+    public void parseSpecificParameters() {
+        this.fileId = this.header[3];
+    }
 
     @Override
     public void run() {

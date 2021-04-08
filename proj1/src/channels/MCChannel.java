@@ -36,6 +36,9 @@ public class MCChannel extends Channel {
             case "RECEIVED_DELETE":
                 Peer.scheduledThreadPoolExecutor.execute(new ReceivedDelete(data, this.desiredFileId));
                 break;
+            case "ON":
+                Peer.scheduledThreadPoolExecutor.execute(new ReceivedON(data));
+                break;
             default:
                 System.err.println("MC Channel message type error:" + msgType);
         }

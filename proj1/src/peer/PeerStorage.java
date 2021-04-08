@@ -321,7 +321,7 @@ public class PeerStorage implements Serializable {
         }
     }
 
-    public synchronized ConcurrentHashMap getPeersBackingUp() {
+    public synchronized ConcurrentHashMap<String, Set<Integer>> getPeersBackingUp() {
         return this.peersBackingUp;
     }
 
