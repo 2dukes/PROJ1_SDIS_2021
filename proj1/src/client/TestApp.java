@@ -14,10 +14,15 @@ public class TestApp {
         }
 
         try {
-
             String[] firstArgs = args[0].split("/");
-            String host = firstArgs[0];
-            String accessPoint = firstArgs[1];
+            String accessPoint;
+            String host = null;
+            if(firstArgs.length == 2) {
+                host = firstArgs[0];
+                accessPoint = firstArgs[1];
+            } else
+                accessPoint = firstArgs[0];
+
             String subProtocol = args[1];
             Registry registry = LocateRegistry.getRegistry(host);
             RMIService initiatorPeer = (RMIService) registry.lookup(accessPoint);
@@ -58,7 +63,7 @@ public class TestApp {
             }
         } catch(Exception e) {
             e.printStackTrace();
-            System.err.println(e.toString());
+            System.err.println(e.getMessage());
         }
 
     }
