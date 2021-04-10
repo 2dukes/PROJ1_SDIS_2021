@@ -22,10 +22,9 @@ public class ReceivedDelete extends MessageManager {
 
     @Override
     public void run() {
-        if (Peer.id != this.senderId && this.version.equals("2.0") && this.desiredFileId != null && this.desiredFileId.equals(this.fileId) && Peer.isInitiator) {
-            Peer.storage.removePeerBackingUp(this.fileId, this.senderId);
-
-            System.out.format("RECEIVED RECEIVED_DELETE version=%s senderId=%s fileId=%s\n",
+        if (Peer.id != this.senderId && this.version.equals("2.0") && Peer.isInitiator) {
+            if(Peer.storage.removePeerBackingUp(this.fileId, this.senderId))
+                System.out.format("RECEIVED RECEIVED_DELETE version=%s senderId=%s fileId=%s\n",
                     this.version, this.senderId, this.fileId);
         }
 

@@ -34,7 +34,7 @@ public class Removed extends MessageManager {
             Peer.storage.deleteRemovedPutChunk(chunk.getKey());
             Peer.storage.decrementStoredMessage(chunkKey);
 
-            if (this.version.equals("2.0") && this.desiredFileId != null && this.desiredFileId.equals(this.fileId) && Peer.isInitiator)
+            if (this.version.equals("2.0"))
                 Peer.storage.removePeerBackingUp(this.fileId, this.senderId);
 
             if (chunk.getCurrentReplicationDegree() < chunk.getDesiredReplicationDegree()) {

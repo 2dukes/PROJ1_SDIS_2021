@@ -325,9 +325,10 @@ public class PeerStorage implements Serializable {
             this.peersBackingUp.get(fileId).add(peerId);
     }
 
-    public synchronized void removePeerBackingUp(String fileId, int peerId) {
+    public synchronized boolean removePeerBackingUp(String fileId, int peerId) {
         if (this.peersBackingUp.containsKey(fileId)) {
             this.peersBackingUp.get(fileId).remove(Integer.valueOf(peerId)); // remove by object, not by index
-        }
+            return true;
+        } return false;
     }
 }
