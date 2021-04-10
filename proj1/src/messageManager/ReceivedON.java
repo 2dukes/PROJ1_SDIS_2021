@@ -21,7 +21,7 @@ public class ReceivedON extends MessageManager {
 
     @Override
     public void run() {
-        if (Peer.id != this.senderId && this.version.equals("2.0") && Peer.isInitiator) {
+        if (Peer.id != this.senderId && this.version.equals("2.0")) {
             System.out.format("RECEIVED ON version=%s senderId=%s\n",
                     this.version, this.senderId);
 
