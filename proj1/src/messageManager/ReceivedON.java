@@ -25,7 +25,10 @@ public class ReceivedON extends MessageManager {
             System.out.format("RECEIVED ON version=%s senderId=%s\n",
                     this.version, this.senderId);
 
-            Peer.scheduledThreadPoolExecutor.execute(new SendSpecificDelete(this.version, this.fileId, this.senderId));
+            for (String key : Peer.storage.getPeersBackingUp().keySet()) {
+                if (Peer.storage.getPeersBackingUp().get(key).contains(this.senderId))
+                    Peer.scheduledThreadPoolExecutor.execute(new SendSpecificDelete(this.version, key, this.senderId));
+            }
         }
     }
 }
