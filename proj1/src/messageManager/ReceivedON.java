@@ -2,6 +2,7 @@ package messageManager;
 
 import peer.Peer;
 import peer.PeerFile;
+import responseManager.SendSpecificDelete;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -23,32 +24,8 @@ public class ReceivedON extends MessageManager {
         if (Peer.id != this.senderId && this.version.equals("2.0") && Peer.isInitiator) {
             System.out.format("RECEIVED ON version=%s senderId=%s\n",
                     this.version, this.senderId);
-            for (String key : Peer.storage.getPeersBackingUp().keySet()) {
-                if (Peer.storage.getPeersBackingUp().get(key).contains(this.senderId))
-                    delete(key);
-            }
-        }
-    }
 
-    public void delete(String fileId) {
-        try {
-            String messageStr = this.version + " DELETE " + Peer.id + " " + fileId + "\r\n\r\n";
-            Peer.mcChannel.setDesiredFileId(fileId);
-
-
-            byte[] header = messageStr.getBytes();
-
-            for (int i = 0; i < 5; i++) {
-                if(this.version.equals("2.0") && Peer.storage.getPeersBackingUp().containsKey(fileId) && Peer.storage.getPeersBackingUp().get(fileId).size() == 0)
-                    break;
-                else
-                    System.out.println(messageStr);
-
-                Peer.mcChannel.send(header);
-                Thread.sleep(10);
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+            Peer.scheduledThreadPoolExecutor.execute(new SendSpecificDelete(this.version, this.fileId, this.senderId));
         }
     }
 }

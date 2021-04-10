@@ -5,18 +5,14 @@ import channels.MCChannel;
 import channels.MDBChannel;
 import channels.MDRChannel;
 import macros.Macros;
+import responseManager.SendAllSpecificDeletes;
 import responseManager.SendON;
-import responseManager.SendSpecificDeletes;
+import responseManager.SendSpecificDelete;
 import responseManager.SendTCPPorts;
 
 import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.UserPrincipal;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -81,7 +77,7 @@ public class Peer implements RMIService {
         // Restore/Delete Enhancement - Warn other peers the this peer is ONLINE
         if(version.equals("2.0")) {
             scheduledThreadPoolExecutor.execute(new SendON(version, id));
-            scheduledThreadPoolExecutor.execute(new SendSpecificDeletes(version));
+            scheduledThreadPoolExecutor.execute(new SendAllSpecificDeletes(version));
         }
 
         System.out.print("Hello :) ");
