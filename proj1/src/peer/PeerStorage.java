@@ -85,9 +85,11 @@ public class PeerStorage implements Serializable {
         }
     }
 
-    public synchronized void addRestoredChunk(Chunk chunk) {
-        if(!this.restoredChunks.contains(chunk))
+    public synchronized boolean addRestoredChunk(Chunk chunk) {
+        if(!this.restoredChunks.contains(chunk)) {
             this.restoredChunks.add(chunk);
+            return true;
+        } return false;
     }
 
     public synchronized boolean chunkAlreadyRestored(String fileId, int chunkNo) {
@@ -298,14 +300,6 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized int getFilePort(String fileId) throws Exception {
-
-        /*for (String key : this.filePorts.keySet()) {
-            System.out.println("PORT::::");
-            System.out.println(key);
-            System.out.println(this.filePorts.get(key));
-            System.out.println("--------------");
-        }1*/
-
         if (this.filePorts.containsKey(fileId))
             return this.filePorts.get(fileId);
         throw new Exception("Port does not exist for file with id " + fileId);

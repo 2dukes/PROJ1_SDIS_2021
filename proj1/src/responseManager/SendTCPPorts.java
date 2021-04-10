@@ -18,7 +18,7 @@ public class SendTCPPorts implements Runnable {
 
     @Override
     public void run() {
-        // <version> TCP_PORT <senderId> <fileId> <portNumber> <CRLF> <CRLF> - Restore Enhancement
+        // <version> TCP_PORT <senderId> <fileId> <portNumber> <CRLF><CRLF> - Restore Enhancement
         String messageStr = this.version + " TCP_PORT " +  Peer.id + " " + this.fileId + " " + this.port + "\r\n\r\n";
 
         for(int i = 0; i < 5; i++) {

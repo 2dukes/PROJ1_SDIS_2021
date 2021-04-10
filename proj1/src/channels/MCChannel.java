@@ -28,13 +28,16 @@ public class MCChannel extends Channel {
                 peer.Peer.scheduledThreadPoolExecutor.execute(new Delete(data));
                 break;
             case "REMOVED":
-                peer.Peer.scheduledThreadPoolExecutor.execute(new Removed(data));
+                peer.Peer.scheduledThreadPoolExecutor.execute(new Removed(data, this.desiredFileId));
                 break;
             case "STORED":
                 peer.Peer.scheduledThreadPoolExecutor.execute(new Stored(data, this.desiredFileId));
                 break;
             case "RECEIVED_DELETE":
                 Peer.scheduledThreadPoolExecutor.execute(new ReceivedDelete(data, this.desiredFileId));
+                break;
+            case "SPECIFIC_DELETE":
+                Peer.scheduledThreadPoolExecutor.execute(new ReceivedSpecificDelete(data));
                 break;
             case "ON":
                 Peer.scheduledThreadPoolExecutor.execute(new ReceivedON(data));

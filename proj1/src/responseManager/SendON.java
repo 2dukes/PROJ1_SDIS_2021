@@ -14,9 +14,9 @@ public class SendON implements Runnable {
     @Override
     public void run() {
         // <version> ON <senderId> <CRLF><CRLF> - Restore/Delete Enhancement
-        if (this.version.equals("2.0")) {
-            String messageStr = this.version + " ON " + this.senderId + "\r\n\r\n";
-            Peer.mcChannel.send(messageStr.getBytes());
-        }
+
+        String messageStr = this.version + " ON " + this.senderId + "\r\n\r\n";
+        Peer.mcChannel.send(messageStr.getBytes());
+
     }
 }

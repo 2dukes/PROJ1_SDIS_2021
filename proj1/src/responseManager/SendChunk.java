@@ -52,15 +52,19 @@ public class SendChunk implements Runnable {
                     DataOutputStream outBuf = new DataOutputStream(clientSocket.getOutputStream());
                     outBuf.writeInt(message.length);
                     outBuf.write(message, 0, message.length);
+                    clientSocket.close();
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
+                    return;
                 } finally {
                     Peer.semaphore.release();
                 }
             }
 
-
-            Peer.mdrChannel.send(message);
+            if(this.version.equals("2.0")) // We don't send the CHUNK body
+                Peer.mdrChannel.send(messageStr.getBytes());
+            else
+                Peer.mdrChannel.send(message);
 
             System.out.format("SENT CHUNK version=%s senderId=%s fileId=%s chunkNo=%s \n",
                     this.version, Peer.id, this.fileId, this.chunkNo);

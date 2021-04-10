@@ -9,9 +9,11 @@ import java.util.concurrent.TimeUnit;
 
 public class Removed extends MessageManager {
     private int chunkNo;
+    private String desiredFileId;
 
-    public Removed(byte[] data) {
+    public Removed(byte[] data, String desiredFileId) {
         super(data);
+        this.desiredFileId = desiredFileId;
     }
 
     @Override
@@ -31,6 +33,9 @@ public class Removed extends MessageManager {
             Peer.storage.decrementChunkReplicationDeg(chunkKey);
             Peer.storage.deleteRemovedPutChunk(chunk.getKey());
             Peer.storage.decrementStoredMessage(chunkKey);
+
+            if (this.version.equals("2.0") && this.desiredFileId != null && this.desiredFileId.equals(this.fileId) && Peer.isInitiator)
+                Peer.storage.removePeerBackingUp(this.fileId, this.senderId);
 
             if (chunk.getCurrentReplicationDegree() < chunk.getDesiredReplicationDegree()) {
                 Peer.scheduledThreadPoolExecutor.schedule(new manageThreads.RemovedBackup(this.version, this.fileId,

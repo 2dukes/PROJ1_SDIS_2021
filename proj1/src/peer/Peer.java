@@ -6,6 +6,7 @@ import channels.MDBChannel;
 import channels.MDRChannel;
 import macros.Macros;
 import responseManager.SendON;
+import responseManager.SendSpecificDeletes;
 import responseManager.SendTCPPorts;
 
 import java.io.*;
@@ -78,7 +79,10 @@ public class Peer implements RMIService {
         scheduledThreadPoolExecutor.execute(mdrChannel);
 
         // Restore/Delete Enhancement - Warn other peers the this peer is ONLINE
-        scheduledThreadPoolExecutor.execute(new SendON(version, id));
+        if(version.equals("2.0")) {
+            scheduledThreadPoolExecutor.execute(new SendON(version, id));
+            scheduledThreadPoolExecutor.execute(new SendSpecificDeletes(version));
+        }
 
         System.out.print("Hello :) ");
         System.out.println("My id: " + id);
