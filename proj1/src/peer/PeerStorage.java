@@ -176,9 +176,6 @@ public class PeerStorage implements Serializable {
                 String id = this.chunks.get(key).getFileId();
                 if (id.equals(fileId)) {
                     hasDeleted = true;
-                    System.out.println("---------------");
-                    System.out.println("DELETED FILE CHUNK " + key);
-                    System.out.println("---------------");
                     decrementStoredMessage(key);
                     this.chunks.remove(key);
                     deleteChunkFile(key);

@@ -26,7 +26,7 @@ public class Delete extends MessageManager {
                     // <version> RECEIVED_DELETE <senderId> <fileId> <CRLF><CRLF>
                     Peer.scheduledThreadPoolExecutor.execute(new SendReceivedDelete(this.version, Peer.id, this.fileId));
                     System.out.format("SENT RECEIVED_DELETE version=%s senderId=%s fileId=%s\n",
-                            this.version, this.senderId, this.fileId);
+                            this.version, Peer.id, this.fileId);
                 }
 
 

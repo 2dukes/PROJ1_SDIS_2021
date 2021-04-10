@@ -27,14 +27,8 @@ public class SendStored implements Runnable {
     public void run() {
         if(this.version.equals("2.0")) { // Backup Enhancement
             if(Peer.storage.getNumberOfStoredChunks().containsKey(this.chunkKey)) {
-                if (Peer.storage.getNumberOfStoredChunks().get(this.chunkKey) >= this.desiredReplicationDeg) {
-                    System.out.println("--------------");
-                    System.out.println("DESIRED REPLICATION DEGREE: " + this.desiredReplicationDeg);
-                    System.out.println("CURRENT REPLICATION DEGREE: " + Peer.storage.getNumberOfStoredChunks().get(this.chunkKey));
-                    System.out.println("--------------");
+                if (Peer.storage.getNumberOfStoredChunks().get(this.chunkKey) >= this.desiredReplicationDeg)
                     return;
-                }
-
             }
         }
         sendMessage();
