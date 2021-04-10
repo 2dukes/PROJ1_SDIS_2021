@@ -17,6 +17,8 @@ public class SendReceivedDelete implements Runnable {
 
     @Override
     public void run() {
+        Peer.storage.decrementStoredMessageByFileId(this.fileId);
+
         // <version> RECEIVED_DELETE <senderId> <fileId> <CRLF><CRLF>
         String messageStr = this.version + " RECEIVED_DELETE " + this.senderId + " " + this.fileId + "\r\n\r\n";
         Peer.mcChannel.send(messageStr.getBytes());

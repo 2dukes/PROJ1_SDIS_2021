@@ -176,8 +176,11 @@ public class PeerStorage implements Serializable {
                 String id = this.chunks.get(key).getFileId();
                 if (id.equals(fileId)) {
                     hasDeleted = true;
-                    this.chunks.remove(key);
+                    System.out.println("---------------");
+                    System.out.println("DELETED FILE CHUNK " + key);
+                    System.out.println("---------------");
                     decrementStoredMessage(key);
+                    this.chunks.remove(key);
                     deleteChunkFile(key);
                 }
             }
@@ -330,5 +333,17 @@ public class PeerStorage implements Serializable {
             this.peersBackingUp.get(fileId).remove(Integer.valueOf(peerId)); // remove by object, not by index
             return true;
         } return false;
+    }
+
+    private synchronized String getChunkFileIdByKey(String chunkKey) {
+        return chunkKey.split(" ")[0];
+    }
+
+    public synchronized void decrementStoredMessageByFileId(String fileId) {
+        for (String chunkKey: this.numberOfStoredChunks.keySet()) {
+            if (getChunkFileIdByKey(chunkKey).equals(fileId)) {
+                decrementStoredMessage(chunkKey);
+            }
+        }
     }
 }

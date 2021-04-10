@@ -27,8 +27,14 @@ public class SendStored implements Runnable {
     public void run() {
         if(this.version.equals("2.0")) { // Backup Enhancement
             if(Peer.storage.getNumberOfStoredChunks().containsKey(this.chunkKey)) {
-                if (Peer.storage.getNumberOfStoredChunks().get(this.chunkKey) >= this.desiredReplicationDeg)
+                if (Peer.storage.getNumberOfStoredChunks().get(this.chunkKey) >= this.desiredReplicationDeg) {
+                    System.out.println("--------------");
+                    System.out.println("DESIRED REPLICATION DEGREE: " + this.desiredReplicationDeg);
+                    System.out.println("CURRENT REPLICATION DEGREE: " + Peer.storage.getNumberOfStoredChunks().get(this.chunkKey));
+                    System.out.println("--------------");
                     return;
+                }
+
             }
         }
         sendMessage();
@@ -68,14 +74,13 @@ public class SendStored implements Runnable {
             System.out.println("Creating file....");
 
             FileOutputStream file = new FileOutputStream(fileName);
-//          System.out.println(data.length);
             file.write(data, 0, data.length);
             file.close();
 
             System.out.println("DONE");
         }
         catch(IOException e) {
-            System.err.println("Exception was caught: " + e.toString());
+            System.err.println("Exception was caught: " + e.getMessage());
         }
     }
 }
