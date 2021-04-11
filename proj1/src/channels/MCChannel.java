@@ -1,13 +1,10 @@
 package channels;
 
-import macros.Macros;
 import messageManager.*;
 import peer.Peer;
 
-import java.io.IOException;
-import java.net.*;
-import java.sql.SQLOutput;
-import java.util.concurrent.Executors;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class MCChannel extends Channel {
     private String desiredFileId;

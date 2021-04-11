@@ -1,7 +1,6 @@
 package peer;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class Chunk implements Serializable {
     private String fileId;

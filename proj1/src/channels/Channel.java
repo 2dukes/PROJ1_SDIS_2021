@@ -25,7 +25,7 @@ public abstract class Channel implements Runnable {
         try {
             DatagramPacket packet = new DatagramPacket(outbuf, outbuf.length, destination, this.port);
             socket.send(packet);
-        } catch(IOException err)   {
+        } catch (IOException err) {
             System.err.println(err.getMessage());
         }
     }
@@ -43,7 +43,7 @@ public abstract class Channel implements Runnable {
             // NetworkInterface netInterface = NetworkInterface.getByName("wlp2s0");
             // SocketAddress sockAdr = new InetSocketAddress(this.IP, this.port);
             //multicastSocket.joinGroup(sockAdr, netInterface);
-            while(true) {
+            while (true) {
                 this.packet = new DatagramPacket(inbuf, inbuf.length);
                 multicastSocket.receive(this.packet);
 
@@ -56,7 +56,7 @@ public abstract class Channel implements Runnable {
                 // Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new MessageManagerBackup(packet.getData()));
             }
 
-        } catch(IOException err) {
+        } catch (IOException err) {
             System.err.println(err.getMessage());
         }
     }
@@ -69,5 +69,7 @@ public abstract class Channel implements Runnable {
         return port;
     }
 
-    public DatagramPacket getPacket() { return packet; }
+    public DatagramPacket getPacket() {
+        return packet;
+    }
 }

@@ -2,8 +2,6 @@ package messageManager;
 
 import peer.Peer;
 
-import java.sql.SQLOutput;
-
 public class Chunk extends MessageManager {
     private int chunkNo;
     private String desiredFileId;
@@ -23,16 +21,16 @@ public class Chunk extends MessageManager {
     public void run() {
         //System.out.println("Initial=" + this.chunkNo);
         if (Peer.id != this.senderId) {
-            if(this.version.equals("2.0") && desiredFileId != null && desiredFileId.equals(this.fileId)) // Restore Enhancement
+            if (this.version.equals("2.0") && desiredFileId != null && desiredFileId.equals(this.fileId)) // Restore Enhancement
                 return;
 
-            if(!Peer.isInitiator) {
-                if(peer.Peer.storage.getChunk(this.fileId, this.chunkNo) == null)
+            if (!Peer.isInitiator) {
+                if (peer.Peer.storage.getChunk(this.fileId, this.chunkNo) == null)
                     return;
             }
 
-          //  System.out.println("Chunk=" + this.chunkNo);
-            if(desiredFileId != null && !desiredFileId.equals(this.fileId) && Peer.isInitiator)
+            //  System.out.println("Chunk=" + this.chunkNo);
+            if (desiredFileId != null && !desiredFileId.equals(this.fileId) && Peer.isInitiator)
                 return;
 
             peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, this.body, 0);

@@ -1,9 +1,10 @@
 package responseManager;
 
-import macros.Macros;
 import peer.Peer;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -13,6 +14,7 @@ public class SendChunk implements Runnable {
     private int chunkNo;
     private byte[] data;
     private InetAddress IP;
+
     public SendChunk(String version, String fileId, int chunkNo, byte[] data, InetAddress IP) {
         this.version = version;
         this.fileId = fileId;
@@ -24,7 +26,7 @@ public class SendChunk implements Runnable {
     @Override
     public void run() {
         try {
-            if(Peer.storage.chunkAlreadyRestored(this.fileId, this.chunkNo)) {
+            if (Peer.storage.chunkAlreadyRestored(this.fileId, this.chunkNo)) {
                 Peer.storage.deleteRestoredChunks(this.fileId, this.chunkNo);
                 return;
             }
@@ -41,7 +43,7 @@ public class SendChunk implements Runnable {
 
             byte[] message = outputStream.toByteArray();
 
-            if(this.version.equals("2.0")) {
+            if (this.version.equals("2.0")) {
                 // TCP connection with Initiator
 
                 Peer.semaphore.acquire();
@@ -61,7 +63,7 @@ public class SendChunk implements Runnable {
                 }
             }
 
-            if(this.version.equals("2.0")) // We don't send the CHUNK body
+            if (this.version.equals("2.0")) // We don't send the CHUNK body
                 Peer.mdrChannel.send(messageStr.getBytes());
             else
                 Peer.mdrChannel.send(message);
@@ -69,7 +71,7 @@ public class SendChunk implements Runnable {
             System.out.format("SENT CHUNK version=%s senderId=%s fileId=%s chunkNo=%s \n",
                     this.version, Peer.id, this.fileId, this.chunkNo);
 
-        } catch(IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
     }

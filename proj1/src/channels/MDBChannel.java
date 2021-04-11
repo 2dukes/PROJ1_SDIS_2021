@@ -1,13 +1,9 @@
 package channels;
 
-import macros.Macros;
 import messageManager.PutChunk;
 
-import java.io.IOException;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class MDBChannel extends Channel {
 

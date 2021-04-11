@@ -7,7 +7,6 @@ import channels.MDRChannel;
 import macros.Macros;
 import responseManager.SendAllSpecificDeletes;
 import responseManager.SendON;
-import responseManager.SendSpecificDelete;
 import responseManager.SendTCPPorts;
 
 import java.io.*;
@@ -19,7 +18,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -75,7 +73,7 @@ public class Peer implements RMIService {
         scheduledThreadPoolExecutor.execute(mdrChannel);
 
         // Restore/Delete Enhancement - Warn other peers the this peer is ONLINE
-        if(version.equals("2.0")) {
+        if (version.equals("2.0")) {
             scheduledThreadPoolExecutor.execute(new SendON(version, id));
             scheduledThreadPoolExecutor.execute(new SendAllSpecificDeletes(version));
         }
@@ -91,9 +89,9 @@ public class Peer implements RMIService {
         try {
             System.out.println("\n\nSaving Peer's content...");
             String fileName = "../../resources/peers/" + Peer.id + "/peerStorage.ser";
-                    
+
             File f = new File(fileName);
-            if(!f.exists()) {
+            if (!f.exists()) {
                 f.getParentFile().mkdirs();
                 f.createNewFile();
             }
@@ -110,18 +108,17 @@ public class Peer implements RMIService {
             storage.getRestoredChunks().clear();
             mcChannel.setDesiredFileId(null);
             mdrChannel.setDesiredFileId(null);
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("Exception was caught: " + e.toString());
         }
     }
 
     public static void deserializeStorage() {
-        try  {
+        try {
             System.out.println("\n\nLoading Peer's content...");
             String fileName = "../../resources/peers/" + Peer.id + "/peerStorage.ser";
             File f = new File(fileName);
-            if(!f.exists())
+            if (!f.exists())
                 storage = new PeerStorage();
             else {
                 FileInputStream file = new FileInputStream(fileName);
@@ -130,8 +127,7 @@ public class Peer implements RMIService {
                 in.close();
                 file.close();
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("Exception was caught: " + e.getMessage());
         }
     }
@@ -143,8 +139,8 @@ public class Peer implements RMIService {
             peerFile = new PeerFile(path, replicationDeg, Peer.id);
             String fileWithPathId = peerFile.getId();
             for (int i = 0; i < storage.getPeerFiles().size(); i++) {
-                if(storage.getPeerFiles().get(i).getPath().equals(path)) {
-                    if(!storage.getPeerFiles().get(i).getId().equals(fileWithPathId))
+                if (storage.getPeerFiles().get(i).getPath().equals(path)) {
+                    if (!storage.getPeerFiles().get(i).getId().equals(fileWithPathId))
                         throw new FileModifiedException("The file you're looking for was modified. Initiating (old) chunks delete protocol...");
                 }
             }
@@ -158,7 +154,7 @@ public class Peer implements RMIService {
                 }
             }
             return;
-        } catch (FileModifiedException e){
+        } catch (FileModifiedException e) {
             System.out.println(e.getMessage());
             delete(path);
         }
@@ -167,7 +163,7 @@ public class Peer implements RMIService {
         Peer.storage.addFile(peerFile);
         mcChannel.setDesiredFileId(peerFile.getId());
 
-        for(int i = 0; i < fileChunks.size(); i++) {
+        for (int i = 0; i < fileChunks.size(); i++) {
             Chunk chunk = fileChunks.get(i);
             int chunkNo = i + 1;
             String messageStr = this.version + " PUTCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + " " + replicationDeg + "\r\n\r\n"; // HardCoded ID
@@ -198,7 +194,7 @@ public class Peer implements RMIService {
             byte[] header = messageStr.getBytes();
 
             for (int i = 0; i < 5; i++) {
-                if(this.version.equals("2.0") && storage.getPeersBackingUp().containsKey(peerFile.getId()) && storage.getPeersBackingUp().get(peerFile.getId()).size() == 0)
+                if (this.version.equals("2.0") && storage.getPeersBackingUp().containsKey(peerFile.getId()) && storage.getPeersBackingUp().get(peerFile.getId()).size() == 0)
                     break;
                 else
                     System.out.println(messageStr);
@@ -220,7 +216,7 @@ public class Peer implements RMIService {
         String desiredFileId = peerFile.getId();
         mdrChannel.setDesiredFileId(desiredFileId);
 
-        if(version.equals("2.0")) { // Restore Enhancement
+        if (version.equals("2.0")) { // Restore Enhancement
             int port = SendTCPPorts.findAvailablePort();
             Peer.storage.addFilePort(desiredFileId, port);
             scheduledThreadPoolExecutor.execute(new SendTCPPorts(version, desiredFileId, port));
@@ -228,7 +224,7 @@ public class Peer implements RMIService {
             scheduledThreadPoolExecutor.execute(new messageManager.ReceiveChunkTCP(desiredFileId));
         }
 
-        for(int i = 0; i < fileChunksSize; i++) {
+        for (int i = 0; i < fileChunksSize; i++) {
             int chunkNo = i + 1;
             String messageStr = this.version + " GETCHUNK " + id + " " + peerFile.getId() + " " + chunkNo + "\r\n\r\n";
 
@@ -239,10 +235,10 @@ public class Peer implements RMIService {
             scheduledThreadPoolExecutor.schedule(new manageThreads.GetChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
-        if(this.version.equals("2.0"))
+        if (this.version.equals("2.0"))
             Thread.sleep(1000 + fileChunksSize * 60);
         else {
-            if(fileChunksSize > 150)
+            if (fileChunksSize > 150)
                 Thread.sleep(1000 + fileChunksSize * 60 + 20000);
             Thread.sleep(1000 + fileChunksSize * 60);
         }
@@ -286,13 +282,13 @@ public class Peer implements RMIService {
     public String state() throws RemoteException {
         String peerState = "\n\n\n------------------------------- Files Backed Up: -------------------------------\n\n\n";
 
-        for(int i = 0; i < storage.getPeerFiles().size(); i++) {
+        for (int i = 0; i < storage.getPeerFiles().size(); i++) {
             PeerFile peerFile = storage.getPeerFiles().get(i);
             peerState += "\n\nFilename: " + peerFile.getPath() + "\n";
             peerState += "Backup ID: " + peerFile.getId() + "\n";
             peerState += "Desired Replication Degree: " + peerFile.getReplicationDegree() + "\n";
             peerState += "[Chunks]\n\n";
-            for(int j = 0; j < peerFile.getChunks().size(); j++) {
+            for (int j = 0; j < peerFile.getChunks().size(); j++) {
                 Chunk chunk = peerFile.getChunks().get(j);
                 peerState += "\tChunk [id=" + chunk.getChunkNo() + " | perceivedReplicationDeg=" + chunk.getCurrentReplicationDegree() + "]\n";
             }

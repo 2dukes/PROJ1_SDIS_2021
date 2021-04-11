@@ -1,12 +1,9 @@
 package messageManager;
 
-import macros.Macros;
-import peer.*;
+import peer.Peer;
 import responseManager.SendStored;
 
-import java.io.*;
 import java.util.Random;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunk extends MessageManager {
@@ -32,16 +29,16 @@ public class PutChunk extends MessageManager {
         /*System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                 this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);*/
 
-        if(Peer.id != this.senderId) { // A peer can't send a chunk to itself
+        if (Peer.id != this.senderId) { // A peer can't send a chunk to itself
             // if(Peer.storage.getChunkOccurrences().get(chunkOccurrencesKey) >= this.replicationDeg)
             //    return;
             String value = this.fileId + " " + this.chunkNo;
             Peer.storage.addRemovedPutChunk(value);
 
-            if(Peer.storage.getChunks().containsKey(chunkKey))
+            if (Peer.storage.getChunks().containsKey(chunkKey))
                 return;
 
-            if(Peer.storage.getAvailableStorage() - Peer.storage.getTotalStorage() >= body.length) {
+            if (Peer.storage.getAvailableStorage() - Peer.storage.getTotalStorage() >= body.length) {
 
                 System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                         this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);

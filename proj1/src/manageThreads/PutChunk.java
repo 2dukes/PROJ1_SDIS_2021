@@ -1,11 +1,9 @@
 package manageThreads;
 
-import macros.Macros;
 import peer.Chunk;
 import peer.Peer;
 import peer.PeerFile;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunk implements Runnable {
@@ -31,7 +29,7 @@ public class PutChunk implements Runnable {
         int currentReplicationDeg = chunk.getCurrentReplicationDegree();
         int desiredReplicationDeg = chunk.getDesiredReplicationDegree();
         // System.out.println("Current RepDeg = " + currentReplicationDeg);
-        if(currentReplicationDeg < desiredReplicationDeg && this.counter++ < 5) {
+        if (currentReplicationDeg < desiredReplicationDeg && this.counter++ < 5) {
             this.time *= 2;
             Peer.mdbChannel.send(message);
             System.out.format("Sent Retry [%d] for Chunk [fileId=%s | chunkNo=%d]\n", this.counter, this.fileId, this.chunkNo);

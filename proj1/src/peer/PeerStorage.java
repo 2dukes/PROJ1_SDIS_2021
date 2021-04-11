@@ -2,7 +2,6 @@ package peer;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,8 +41,8 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void addFile(PeerFile peerFile) {
-        for(int i = 0; i < this.peerFiles.size(); i++) {
-            if(this.peerFiles.get(i).getId().equals(peerFile.getId())) // Verify if it doesn't exist already
+        for (int i = 0; i < this.peerFiles.size(); i++) {
+            if (this.peerFiles.get(i).getId().equals(peerFile.getId())) // Verify if it doesn't exist already
                 return;
         }
         peerFiles.add(peerFile);
@@ -74,11 +73,13 @@ public class PeerStorage implements Serializable {
         return this.peerFiles;
     }
 
-    public synchronized List<Chunk> getRestoredChunks() { return this.restoredChunks; }
+    public synchronized List<Chunk> getRestoredChunks() {
+        return this.restoredChunks;
+    }
 
     public synchronized void deleteRestoredChunks(String fileId, int chunkNo) {
         for (int i = 0; i < this.restoredChunks.size(); i++) {
-            if(this.restoredChunks.get(i).getFileId().equals(fileId) && this.restoredChunks.get(i).getChunkNo() == chunkNo) {
+            if (this.restoredChunks.get(i).getFileId().equals(fileId) && this.restoredChunks.get(i).getChunkNo() == chunkNo) {
                 this.restoredChunks.remove(i);
                 return;
             }
@@ -86,15 +87,16 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized boolean addRestoredChunk(Chunk chunk) {
-        if(!this.restoredChunks.contains(chunk)) {
+        if (!this.restoredChunks.contains(chunk)) {
             this.restoredChunks.add(chunk);
             return true;
-        } return false;
+        }
+        return false;
     }
 
     public synchronized boolean chunkAlreadyRestored(String fileId, int chunkNo) {
         for (int i = 0; i < this.restoredChunks.size(); i++) {
-            if(this.restoredChunks.get(i).getFileId().equals(fileId) && this.restoredChunks.get(i).getChunkNo() == chunkNo)
+            if (this.restoredChunks.get(i).getFileId().equals(fileId) && this.restoredChunks.get(i).getChunkNo() == chunkNo)
                 return true;
         }
         return false;
@@ -109,14 +111,14 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void incrementChunkReplicationDeg(String key) {
-        if(this.chunks.containsKey(key))
+        if (this.chunks.containsKey(key))
             this.chunks.get(key).incrementCurrentReplicationDegree();
         else
             updatePeerFileChunkReplicationDeg(key);
     }
 
     public synchronized void decrementChunkReplicationDeg(String key) {
-        if(this.chunks.containsKey(key)) {
+        if (this.chunks.containsKey(key)) {
             Chunk chunk = this.chunks.get(key);
             chunk.decrementCurrentReplicationDegree();
             this.chunks.put(key, chunk);
@@ -125,8 +127,8 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized PeerFile getPeerFile(String fileId) {
-        for(int i = 0; i < this.peerFiles.size(); i++) {
-            if(this.peerFiles.get(i).getId().equals(fileId))
+        for (int i = 0; i < this.peerFiles.size(); i++) {
+            if (this.peerFiles.get(i).getId().equals(fileId))
                 return this.peerFiles.get(i);
         }
 
@@ -134,7 +136,7 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized Chunk getChunkFromPeerFile(PeerFile peerFile, int chunkNo) {
-        if(peerFile != null)
+        if (peerFile != null)
             return peerFile.getChunks().get(chunkNo - 1);
         return null;
     }
@@ -152,7 +154,7 @@ public class PeerStorage implements Serializable {
         int chunkNo = Integer.parseInt(key.split(" ")[1]);
         PeerFile peerFile = getPeerFile(fileId);
         Chunk chunk = getChunkFromPeerFile(peerFile, chunkNo);
-        if(chunk != null)
+        if (chunk != null)
             chunk.incrementCurrentReplicationDegree();
         else
             System.out.format("Chunk [fileId=%s | chunkNo=%d] not present in peer.\n", fileId, chunkNo);
@@ -163,7 +165,7 @@ public class PeerStorage implements Serializable {
         int chunkNo = Integer.parseInt(key.split(" ")[1]);
         PeerFile peerFile = getPeerFile(fileId);
         Chunk chunk = getChunkFromPeerFile(peerFile, chunkNo);
-        if(chunk != null)
+        if (chunk != null)
             chunk.decrementCurrentReplicationDegree();
         else
             System.out.format("Chunk [fileId=%s | chunkNo=%d] not present in peer.", fileId, chunkNo);
@@ -211,7 +213,7 @@ public class PeerStorage implements Serializable {
             int fileRestoredChunksSize = 0;
 
             for (int i = 0; i < this.restoredChunks.size(); i++) {
-                if(this.restoredChunks.get(i).getFileId().equals(fileId)) {
+                if (this.restoredChunks.get(i).getFileId().equals(fileId)) {
                     System.out.println("Chunk Number " + this.restoredChunks.get(i).getChunkNo());
                     fileRestoredChunksSize++;
                 }
@@ -220,7 +222,7 @@ public class PeerStorage implements Serializable {
             System.out.println("Restored Size " + fileRestoredChunksSize);
             System.out.println("Number of Expected " + numberOfExpectedChunks);
 
-            if(fileRestoredChunksSize != numberOfExpectedChunks)
+            if (fileRestoredChunksSize != numberOfExpectedChunks)
                 throw new Exception("Insufficient number of chunks provided.");
 
             String[] pathArray = filePath.split("/");
@@ -228,7 +230,7 @@ public class PeerStorage implements Serializable {
             String fileName = "../../resources/peers/" + Peer.id + "/restored/" + path;
 
             File f = new File(fileName);
-            if(!f.exists()) {
+            if (!f.exists()) {
                 f.getParentFile().mkdirs();
                 f.createNewFile();
             }
@@ -236,8 +238,8 @@ public class PeerStorage implements Serializable {
             System.out.println("Restoring file...");
             FileOutputStream file = new FileOutputStream(fileName);
 
-            for(int i = 0; i < this.restoredChunks.size(); i++) {
-                if(this.restoredChunks.get(i).getFileId().equals(fileId))
+            for (int i = 0; i < this.restoredChunks.size(); i++) {
+                if (this.restoredChunks.get(i).getFileId().equals(fileId))
                     file.write(this.restoredChunks.get(i).getData(), 0, this.restoredChunks.get(i).getData().length);
             }
 
@@ -245,8 +247,7 @@ public class PeerStorage implements Serializable {
 
             System.out.println("DONE");
             this.restoredChunks.clear();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("Exception was caught: " + e.toString());
         }
     }
@@ -263,7 +264,7 @@ public class PeerStorage implements Serializable {
         this.chunks.remove(key);
         try {
             deleteChunkFile(key);
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
@@ -282,13 +283,13 @@ public class PeerStorage implements Serializable {
     public synchronized void decrementStoredMessage(String chunkKey) {
         if (this.numberOfStoredChunks.containsKey(chunkKey)) {
             this.numberOfStoredChunks.put(chunkKey, this.numberOfStoredChunks.get(chunkKey) - 1);
-            if(this.numberOfStoredChunks.get(chunkKey) == 0)
+            if (this.numberOfStoredChunks.get(chunkKey) == 0)
                 this.numberOfStoredChunks.remove(chunkKey);
         }
     }
 
     public void removeFileByPath(String path) {
-        for (PeerFile file: peerFiles)
+        for (PeerFile file : peerFiles)
             if (file.getPath().equals(path)) {
                 peerFiles.remove(file);
                 return;
@@ -329,7 +330,8 @@ public class PeerStorage implements Serializable {
         if (this.peersBackingUp.containsKey(fileId)) {
             this.peersBackingUp.get(fileId).remove(Integer.valueOf(peerId)); // remove by object, not by index
             return true;
-        } return false;
+        }
+        return false;
     }
 
     private synchronized String getChunkFileIdByKey(String chunkKey) {
@@ -337,7 +339,7 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void decrementStoredMessageByFileId(String fileId) {
-        for (String chunkKey: this.numberOfStoredChunks.keySet()) {
+        for (String chunkKey : this.numberOfStoredChunks.keySet()) {
             if (getChunkFileIdByKey(chunkKey).equals(fileId)) {
                 decrementStoredMessage(chunkKey);
             }

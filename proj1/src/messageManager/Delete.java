@@ -15,7 +15,7 @@ public class Delete extends MessageManager {
 
     @Override
     public void run() {
-        if(Peer.id != this.senderId) {
+        if (Peer.id != this.senderId) {
             if (Peer.storage.deleteFileChunks(this.fileId)) {
 
                 System.out.format("RECEIVED DELETE version=%s senderId=%s fileId=%s\n",

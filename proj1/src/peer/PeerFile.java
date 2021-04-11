@@ -1,16 +1,16 @@
 package peer;
 
-import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
-import java.math.BigInteger;
 import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.UserPrincipal;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,7 +24,7 @@ public class PeerFile implements Serializable {
     private List<Integer> peersBackingUp;
     private String path;
 
-    public PeerFile(String path, int replicationDegree, int peerId) throws IOException, NoSuchAlgorithmException  {
+    public PeerFile(String path, int replicationDegree, int peerId) throws IOException, NoSuchAlgorithmException {
         this.replicationDegree = replicationDegree;
         this.path = path;
         this.peerId = peerId;
@@ -44,13 +44,13 @@ public class PeerFile implements Serializable {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         String seed = fileName + owner + dateModified.toString();
         byte[] hash = md.digest(seed.getBytes(StandardCharsets.UTF_8));
-        
-        BigInteger number = new BigInteger(1, hash);  
-        StringBuilder hexString = new StringBuilder(number.toString(16));  
+
+        BigInteger number = new BigInteger(1, hash);
+        StringBuilder hexString = new StringBuilder(number.toString(16));
         while (hexString.length() < 32)
-            hexString.insert(0, '0');  
-        
-        this.fileId = hexString.toString(); 
+            hexString.insert(0, '0');
+
+        this.fileId = hexString.toString();
     }
 
     public String getId() {
@@ -73,23 +73,22 @@ public class PeerFile implements Serializable {
 
         int i, chunkNo = 0, chunkSize = 64000;
 
-        for(i = 0; i < fileSize; i += chunkSize) {
+        for (i = 0; i < fileSize; i += chunkSize) {
             byte[] chunkData;
-            if(fileSize > 25 * Math.pow(10, 6) && (i % (chunkSize * 4)) == 0) {
+            if (fileSize > 25 * Math.pow(10, 6) && (i % (chunkSize * 4)) == 0) {
                 double amountDownloaded = (double) i / (double) fileSize;
                 double percentageDownloaded = amountDownloaded * 100;
                 System.out.printf("Chunk Division Percentage: %.2f%% \n", percentageDownloaded);
             }
             if (fileSize - i >= chunkSize) { // if it's not the last chunk
-                chunkData = Arrays.copyOf(fileData,chunkSize);
+                chunkData = Arrays.copyOf(fileData, chunkSize);
                 fileData = Arrays.copyOfRange(fileData, chunkSize, fileSize - i);
                 this.chunks.add(new Chunk(this.fileId, chunkNo++, chunkData, this.replicationDegree));
                 if (chunkData.length == chunkSize && i + chunkSize >= fileSize) {
                     this.chunks.add(new Chunk(this.fileId, chunkNo++, new byte[0], this.replicationDegree));
                 }
-            }
-            else { // last chunk
-                chunkData = Arrays.copyOf(fileData,fileSize - i);
+            } else { // last chunk
+                chunkData = Arrays.copyOf(fileData, fileSize - i);
                 fileData = new byte[0];
                 this.chunks.add(new Chunk(this.fileId, chunkNo++, chunkData, this.replicationDegree));
             }

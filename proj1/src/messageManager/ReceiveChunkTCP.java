@@ -1,16 +1,11 @@
 package messageManager;
 
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-
-import macros.Macros;
 import peer.Chunk;
 import peer.Peer;
+
+import java.io.DataInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class ReceiveChunkTCP extends MessageManager {
     private int chunkNo;
@@ -49,7 +44,7 @@ public class ReceiveChunkTCP extends MessageManager {
                 parseSpecificParameters();
 
                 Chunk chunk = new Chunk(this.fileId, this.chunkNo, this.body, 0);
-                if(Peer.storage.addRestoredChunk(chunk))
+                if (Peer.storage.addRestoredChunk(chunk))
                     numberOfReceivedChunks++;
 
                 // System.out.println("Received Message: " + new String(this.data));

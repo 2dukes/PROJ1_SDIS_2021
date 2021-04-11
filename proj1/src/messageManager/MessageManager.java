@@ -1,15 +1,8 @@
 package messageManager;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import macros.Macros;
-import peer.Peer;
+
+import java.util.Arrays;
 
 public abstract class MessageManager implements Runnable {
     protected byte[] data;
@@ -32,7 +25,8 @@ public abstract class MessageManager implements Runnable {
         parseSpecificParameters();
     }
 
-    public MessageManager() { }
+    public MessageManager() {
+    }
 
     // <Version> <MessageType> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
     public void parseMessage(byte[] data) throws Exception {
@@ -42,14 +36,14 @@ public abstract class MessageManager implements Runnable {
         byte currentByte = data[0];
         byte nextByte = data[1];
         int index = 2;
-        while(index < data.length - 2) {
+        while (index < data.length - 2) {
 
-            if(currentByte == Macros.CR && nextByte == Macros.LF && data[index + 1] == Macros.CR && data[index + 2] == Macros.LF) {
+            if (currentByte == Macros.CR && nextByte == Macros.LF && data[index + 1] == Macros.CR && data[index + 2] == Macros.LF) {
                 byte[] headerBytes = Arrays.copyOfRange(data, 0, index);
                 this.body = Arrays.copyOfRange(data, index + 3, data.length);
                 this.header = new String(headerBytes).trim().split("\\s+");
 
-                if(this.header.length < 3)
+                if (this.header.length < 3)
                     throw new Exception("Poorly formatted header!");
 
                 return;

@@ -2,8 +2,6 @@ package messageManager;
 
 import peer.Peer;
 
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +24,7 @@ public class Removed extends MessageManager {
     public void run() {
         if (Peer.id != this.senderId) {
             peer.Chunk chunk = Peer.storage.getChunk(this.fileId, this.chunkNo);
-            if(chunk == null)
+            if (chunk == null)
                 return;
 
             String chunkKey = this.fileId + " " + this.chunkNo;
@@ -39,7 +37,7 @@ public class Removed extends MessageManager {
 
             if (chunk.getCurrentReplicationDegree() < chunk.getDesiredReplicationDegree()) {
                 Peer.scheduledThreadPoolExecutor.schedule(new manageThreads.RemovedBackup(this.version, this.fileId,
-                        this.chunkNo, chunk.getDesiredReplicationDegree(), chunk.getData()),
+                                this.chunkNo, chunk.getDesiredReplicationDegree(), chunk.getData()),
                         new Random().nextInt(401), TimeUnit.MILLISECONDS);
             }
 

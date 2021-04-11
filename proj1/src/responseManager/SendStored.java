@@ -25,8 +25,8 @@ public class SendStored implements Runnable {
 
     @Override
     public void run() {
-        if(this.version.equals("2.0")) { // Backup Enhancement
-            if(Peer.storage.getNumberOfStoredChunks().containsKey(this.chunkKey)) {
+        if (this.version.equals("2.0")) { // Backup Enhancement
+            if (Peer.storage.getNumberOfStoredChunks().containsKey(this.chunkKey)) {
                 if (Peer.storage.getNumberOfStoredChunks().get(this.chunkKey) >= this.desiredReplicationDeg)
                     return;
             }
@@ -60,7 +60,7 @@ public class SendStored implements Runnable {
             String fileName = "../../resources/peers/" + Peer.id + "/chunks/" + this.chunkKey;
 
             File f = new File(fileName);
-            if(!f.exists()) {
+            if (!f.exists()) {
                 f.getParentFile().mkdirs();
                 f.createNewFile();
             }
@@ -72,8 +72,7 @@ public class SendStored implements Runnable {
             file.close();
 
             System.out.println("DONE");
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("Exception was caught: " + e.getMessage());
         }
     }

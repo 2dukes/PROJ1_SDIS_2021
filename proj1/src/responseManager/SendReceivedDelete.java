@@ -1,6 +1,5 @@
 package responseManager;
 
-import messageManager.MessageManager;
 import peer.Peer;
 
 public class SendReceivedDelete implements Runnable {

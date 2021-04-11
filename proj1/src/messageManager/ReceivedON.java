@@ -1,14 +1,7 @@
 package messageManager;
 
 import peer.Peer;
-import peer.PeerFile;
 import responseManager.SendSpecificDelete;
-
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class ReceivedON extends MessageManager {
 
@@ -17,7 +10,8 @@ public class ReceivedON extends MessageManager {
     }
 
     @Override
-    public void parseSpecificParameters() { }
+    public void parseSpecificParameters() {
+    }
 
     @Override
     public void run() {

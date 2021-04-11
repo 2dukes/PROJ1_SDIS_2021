@@ -24,7 +24,7 @@ public class RemovedBackup implements Runnable {
     @Override
     public void run() {
         String value = this.fileId + " " + this.chunkNo;
-        if(!Peer.storage.getRemovedPutChunks().contains(value)) {
+        if (!Peer.storage.getRemovedPutChunks().contains(value)) {
             String messageStr = "1.0 PUTCHUNK " + Peer.id + " " + this.fileId + " " + this.chunkNo + " " + this.desiredReplicationDeg + "\r\n\r\n";
 
             byte[] header = messageStr.getBytes();

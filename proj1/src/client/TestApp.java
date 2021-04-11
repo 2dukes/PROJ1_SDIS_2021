@@ -4,11 +4,10 @@ import peer.RMIService;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.sql.SQLOutput;
 
 public class TestApp {
     public static void main(String[] args) {
-        if(args.length > 4) {
+        if (args.length > 4) {
             System.err.println("ERROR: App format must be: App <host>/<peer_ap> <sub_protocol> <opnd_1> <opnd_2>");
             return;
         }
@@ -17,7 +16,7 @@ public class TestApp {
             String[] firstArgs = args[0].split("/");
             String accessPoint;
             String host = null;
-            if(firstArgs.length == 2) {
+            if (firstArgs.length == 2) {
                 host = firstArgs[0];
                 accessPoint = firstArgs[1];
             } else
@@ -33,7 +32,7 @@ public class TestApp {
                 case "BACKUP":
                     path = args[2].trim();
                     int replicationDeg = Integer.parseInt(args[3]);
-                    if(replicationDeg > 0) {
+                    if (replicationDeg > 0) {
                         System.out.println("Backing up...");
                         initiatorPeer.backup(path, replicationDeg);
                     }
@@ -61,7 +60,7 @@ public class TestApp {
                 default:
                     throw new Exception("Wrong arguments [sub_protocol = " + subProtocol + "]");
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
         }

@@ -3,11 +3,6 @@ package messageManager;
 import peer.Peer;
 import responseManager.SendReceivedDelete;
 
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
 public class ReceivedSpecificDelete extends MessageManager {
     private int peerId;
 

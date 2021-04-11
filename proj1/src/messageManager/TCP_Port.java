@@ -17,7 +17,7 @@ public class TCP_Port extends MessageManager {
 
     @Override
     public void run() {
-        if(Peer.id != this.senderId && this.version.equals("2.0")) {
+        if (Peer.id != this.senderId && this.version.equals("2.0")) {
 
             Peer.storage.addFilePort(this.fileId, this.port);
 

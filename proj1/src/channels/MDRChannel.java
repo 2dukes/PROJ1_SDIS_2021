@@ -1,12 +1,10 @@
 package channels;
 
-import macros.Macros;
 import messageManager.Chunk;
 import messageManager.TCP_Port;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
 
 public class MDRChannel extends Channel {
     private String desiredFileId;

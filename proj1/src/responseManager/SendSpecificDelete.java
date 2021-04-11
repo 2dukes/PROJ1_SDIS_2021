@@ -2,10 +2,6 @@ package responseManager;
 
 import peer.Peer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 public class SendSpecificDelete implements Runnable {
     private String version;
     private String fileId;
@@ -34,7 +30,7 @@ public class SendSpecificDelete implements Runnable {
             byte[] header = messageStr.getBytes();
 
             for (int i = 0; i < 5; i++) {
-                if(Peer.storage.getPeersBackingUp().containsKey(this.fileId) && Peer.storage.getPeersBackingUp().get(this.fileId).size() == 0)
+                if (Peer.storage.getPeersBackingUp().containsKey(this.fileId) && Peer.storage.getPeersBackingUp().get(this.fileId).size() == 0)
                     break;
                 else
                     System.out.println(messageStr);
