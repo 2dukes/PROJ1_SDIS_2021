@@ -20,8 +20,8 @@ public class ReceivedON extends MessageManager {
                     this.version, this.senderId);
 
             for (String key : Peer.storage.getPeersBackingUp().keySet()) {
-                if (Peer.storage.getPeersBackingUp().get(key).contains(this.senderId))
-                    Peer.scheduledThreadPoolExecutor.execute(new SendSpecificDelete(this.version, key, this.senderId));
+                if (Peer.storage.getPeersBackingUp().get(key).contains(this.senderId) && Peer.storage.getFilesToRemove().contains(key))
+                        Peer.scheduledThreadPoolExecutor.execute(new SendSpecificDelete(this.version, key, this.senderId));
             }
         }
     }

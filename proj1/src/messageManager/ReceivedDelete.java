@@ -18,11 +18,11 @@ public class ReceivedDelete extends MessageManager {
     @Override
     public void run() {
         if (Peer.id != this.senderId && this.version.equals("2.0")) {
-            if (Peer.isInitiator) {
-                if (Peer.storage.removePeerBackingUp(this.fileId, this.senderId)) {
-                    System.out.format("RECEIVED RECEIVED_DELETE version=%s senderId=%s fileId=%s\n",
-                            this.version, this.senderId, this.fileId);
-                }
+            if(Peer.storage.removePeerBackingUp(this.fileId, this.senderId)) {
+                if(Peer.storage.getPeersBackingUp().get(this.fileId).size() == 0)
+                    Peer.storage.deleteFileToRemove(this.fileId);
+                System.out.format("RECEIVED RECEIVED_DELETE version=%s senderId=%s fileId=%s\n",
+                        this.version, this.senderId, this.fileId);
             }
             Peer.storage.decrementStoredMessageByFileId(this.fileId);
         }

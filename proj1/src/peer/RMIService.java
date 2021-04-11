@@ -12,7 +12,7 @@ public interface RMIService extends Remote {
 
     void restore(String path) throws Exception;
 
-    void reclaim(int maximumDiskSpace) throws RemoteException;
+    void reclaim(long maximumDiskSpace) throws RemoteException;
 
     void setInitiator(boolean isInitiator) throws RemoteException;
 

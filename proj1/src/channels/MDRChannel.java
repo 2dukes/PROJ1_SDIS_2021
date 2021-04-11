@@ -17,14 +17,9 @@ public class MDRChannel extends Channel {
     public synchronized void handleMessageType(byte[] data) {
         String msgType = new String(data).trim().split("\\s+")[1];
         switch (msgType) {
-            case "CHUNK":
-                peer.Peer.scheduledThreadPoolExecutor.execute(new Chunk(data, this.desiredFileId));
-                break;
-            case "TCP_PORT":
-                peer.Peer.scheduledThreadPoolExecutor.execute(new TCP_Port(data));
-                break;
-            default:
-                System.err.println("MDR Channel message type error:" + msgType);
+            case "CHUNK" -> peer.Peer.scheduledThreadPoolExecutor.execute(new Chunk(data, this.desiredFileId));
+            case "TCP_PORT" -> peer.Peer.scheduledThreadPoolExecutor.execute(new TCP_Port(data));
+            default -> System.err.println("MDR Channel message type error:" + msgType);
         }
     }
 

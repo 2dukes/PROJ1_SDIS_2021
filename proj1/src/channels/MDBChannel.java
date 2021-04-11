@@ -1,6 +1,7 @@
 package channels;
 
 import messageManager.PutChunk;
+import peer.Peer;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -14,12 +15,9 @@ public class MDBChannel extends Channel {
     @Override
     public synchronized void handleMessageType(byte[] data) {
         String msgType = new String(data).trim().split("\\s+")[1];
-        switch (msgType) {
-            case "PUTCHUNK":
-                peer.Peer.scheduledThreadPoolExecutor.execute(new PutChunk(data));
-                break;
-            default:
-                System.err.println("MDB Channel message type error:" + msgType);
-        }
+        if ("PUTCHUNK".equals(msgType))
+            Peer.scheduledThreadPoolExecutor.execute(new PutChunk(data));
+        else
+            System.err.println("MDB Channel message type error:" + msgType);
     }
 }

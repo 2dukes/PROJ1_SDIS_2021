@@ -29,36 +29,35 @@ public class TestApp {
 
             String path;
             switch (subProtocol) {
-                case "BACKUP":
+                case "BACKUP" -> {
                     path = args[2].trim();
                     int replicationDeg = Integer.parseInt(args[3]);
                     if (replicationDeg > 0) {
                         System.out.println("Backing up...");
                         initiatorPeer.backup(path, replicationDeg);
                     }
-                    break;
-                case "RECLAIM":
+                }
+                case "RECLAIM" -> {
                     System.out.println("Reclaiming Space...");
                     int amountDiskSpace = Integer.parseInt(args[2]);
                     initiatorPeer.reclaim(amountDiskSpace);
-                    break;
-                case "DELETE":
+                }
+                case "DELETE" -> {
                     System.out.println("Deleting...");
                     path = args[2].trim();
                     initiatorPeer.delete(path);
-                    break;
-                case "RESTORE":
+                }
+                case "RESTORE" -> {
                     System.out.println("Restoring...");
                     path = args[2].trim();
                     initiatorPeer.restore(path);
-                    break;
-                case "STATE":
+                }
+                case "STATE" -> {
                     System.out.println("Asking for Peer State...");
                     String peerState = initiatorPeer.state();
                     System.out.println(peerState);
-                    break;
-                default:
-                    throw new Exception("Wrong arguments [sub_protocol = " + subProtocol + "]");
+                }
+                default -> throw new Exception("Wrong arguments [sub_protocol = " + subProtocol + "]");
             }
         } catch (Exception e) {
             e.printStackTrace();

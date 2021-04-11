@@ -177,7 +177,7 @@ public class Peer implements RMIService {
 
             System.out.println(messageStr);
             mdbChannel.send(message);
-            Thread.sleep(15);
+            Thread.sleep(50);
             scheduledThreadPoolExecutor.schedule(new manageThreads.PutChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
 
@@ -189,7 +189,7 @@ public class Peer implements RMIService {
             PeerFile peerFile = storage.getFileByPath(path);
             String messageStr = this.version + " DELETE " + id + " " + peerFile.getId() + "\r\n\r\n";
             mcChannel.setDesiredFileId(peerFile.getId());
-
+            storage.getFilesToRemove().add(peerFile.getId());
 
             byte[] header = messageStr.getBytes();
 
@@ -250,17 +250,18 @@ public class Peer implements RMIService {
         storage.restoreFile(path, peerFile.getChunks().size());
     }
 
-    public void reclaim(int diskSpace) throws RemoteException {
-        int maximumDiskSpace = diskSpace * 1000; // Convert to Bytes
-        int totalStorage = storage.getTotalStorage();
-        int toRemove = totalStorage - maximumDiskSpace;
+    public void reclaim(long diskSpace) throws RemoteException {
+        long maximumDiskSpace = diskSpace * 1000; // Convert to Bytes
+        long totalStorage = storage.getTotalStorage();
+        long toRemove = totalStorage - maximumDiskSpace;
 
         storage.setAvailableStorage(maximumDiskSpace);
 
         if (toRemove > 0) {
             List<Chunk> chunksList = new ArrayList<>(storage.getChunks().values());
-            chunksList.sort((c1, c2) -> Chunk.compareToReplicationDeg(c2, c1));
-            int i = 0, removed = 0;
+            chunksList.sort((c1, c2) -> Chunk.compareToReplicationDeg(c1, c2));
+            int i = 0;
+            long removed = 0;
 
             while (removed < toRemove && i < chunksList.size()) {
                 Chunk chunk = chunksList.get(i);
@@ -297,13 +298,14 @@ public class Peer implements RMIService {
         peerState += "\n\n\n------------------------------- Chunks Stored: -------------------------------\n\n\n";
         for (String key : storage.getChunks().keySet()) {
             Chunk chunk = storage.getChunks().get(key);
-            peerState += "\n\nChunk ID: " + chunk.getChunkNo() + "\n";
+            peerState += "\n\nChunk ID: " + chunk.getKey() + "\n";
             peerState += "Chunk Size: " + (double) chunk.getData().length / 1000 + " kB\n";
             peerState += "Chunk Desired Replication Degree: " + chunk.getDesiredReplicationDegree() + "\n";
             peerState += "Chunk Perceived Replication Degree: " + chunk.getCurrentReplicationDegree() + "\n";
         }
 
         peerState += "\n\n\n------------------------------- General Information: -------------------------------\n\n\n";
+        System.out.println("CAPACITY: " + storage.getAvailableStorage());
         peerState += "Peer\'s Capacity: " + (double) storage.getAvailableStorage() / 1000 + " kB\n";
         peerState += "Peer\'s used Storage: " + (double) storage.getTotalStorage() / 1000 + " kB\n";
 

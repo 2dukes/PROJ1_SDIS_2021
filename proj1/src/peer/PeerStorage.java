@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PeerStorage implements Serializable {
     public List<PeerFile> peerFiles;
-    private int availableStorage = (int) (5 * Math.pow(10, 9)); // ~ 5 GBytes
+    private long availableStorage = (long) (5 * Math.pow(10, 9)); // ~ 5 GBytes
 
     // Key: fileId chunkNo
     // Value: Chunk itself
@@ -30,6 +30,9 @@ public class PeerStorage implements Serializable {
     // Value: Set of Peer Ids backing up the file chunks
     private ConcurrentHashMap<String, Set<Integer>> peersBackingUp;
 
+    // File Id
+    private Set<String> filesToRemove;
+
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
         this.restoredChunks = new ArrayList<>();
@@ -38,6 +41,7 @@ public class PeerStorage implements Serializable {
         this.numberOfStoredChunks = new ConcurrentHashMap<>();
         this.filePorts = new ConcurrentHashMap<>();
         this.peersBackingUp = new ConcurrentHashMap<>();
+        this.filesToRemove = new HashSet<>();
     }
 
     public synchronized void addFile(PeerFile peerFile) {
@@ -65,7 +69,7 @@ public class PeerStorage implements Serializable {
         this.chunks.put(key, chunk);
     }
 
-    public synchronized int getAvailableStorage() {
+    public synchronized long getAvailableStorage() {
         return this.availableStorage;
     }
 
@@ -106,7 +110,7 @@ public class PeerStorage implements Serializable {
         return this.chunks;
     }
 
-    public synchronized void setAvailableStorage(int size) {
+    public synchronized void setAvailableStorage(long size) {
         this.availableStorage = size;
     }
 
@@ -252,8 +256,8 @@ public class PeerStorage implements Serializable {
         }
     }
 
-    public int getTotalStorage() {
-        int total = 0;
+    public long getTotalStorage() {
+        long total = 0;
         for (String key : this.chunks.keySet()) {
             total += this.chunks.get(key).getData().length;
         }
@@ -344,5 +348,17 @@ public class PeerStorage implements Serializable {
                 decrementStoredMessage(chunkKey);
             }
         }
+    }
+
+    public synchronized Set<String> getFilesToRemove() {
+        return this.filesToRemove;
+    }
+
+    public synchronized boolean deleteFileToRemove(String fileId) {
+        if (this.filesToRemove.contains(fileId)) {
+            this.filesToRemove.remove(fileId); // remove by object, not by index
+            return true;
+        }
+        return false;
     }
 }
