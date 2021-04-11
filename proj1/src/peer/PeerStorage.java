@@ -189,7 +189,7 @@ public class PeerStorage implements Serializable {
     }
 
     public synchronized void deleteChunkFile(String key) throws Exception {
-        File file = new File("../resources/peers/" + Peer.id + "/chunks/" + key);
+        File file = new File("../../resources/peers/" + Peer.id + "/chunks/" + key);
         if (!file.delete()) {
             throw new Exception("Chunk file with key = " + key + " does not exist or was already deleted.");
         }
@@ -225,7 +225,7 @@ public class PeerStorage implements Serializable {
 
             String[] pathArray = filePath.split("/");
             String path = pathArray[pathArray.length - 1];
-            String fileName = "../resources/peers/" + Peer.id + "/restored/" + path;
+            String fileName = "../../resources/peers/" + Peer.id + "/restored/" + path;
 
             File f = new File(fileName);
             if(!f.exists()) {

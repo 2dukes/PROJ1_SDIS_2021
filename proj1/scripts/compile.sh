@@ -8,9 +8,9 @@
 
 # Assume that the script is run in src/
 
-javac -d ../build */*.java
+javac -d build */*.java
 
-cd ../build
+cd build
 
 # Start rmiregistry (port=1099) if not running yet
 rmi_pid=$(lsof -i:1099 | grep rmi | awk 'NR==1 {print $2}')

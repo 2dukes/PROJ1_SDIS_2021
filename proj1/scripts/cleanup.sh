@@ -15,10 +15,10 @@ argc=$#
 if [ "$argc" -eq 1 ]
 then
 	peer_id=$1
-	rm -rf ../resources/peers/$peer_id
+	rm -rf ../../resources/peers/$peer_id
 elif [ "$argc" -eq 0 ]
 then
-    rm -rf ../resources/peers/
+    rm -rf ../../resources/peers/
 else
 	echo "Usage: $0 [<peer_id>]]"
 	exit 1

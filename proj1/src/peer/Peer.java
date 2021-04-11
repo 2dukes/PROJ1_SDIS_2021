@@ -90,7 +90,7 @@ public class Peer implements RMIService {
     public static void serializeStorage() {
         try {
             System.out.println("\n\nSaving Peer's content...");
-            String fileName = "../resources/peers/" + Peer.id + "/peerStorage.ser";
+            String fileName = "../../resources/peers/" + Peer.id + "/peerStorage.ser";
                     
             File f = new File(fileName);
             if(!f.exists()) {
@@ -119,7 +119,7 @@ public class Peer implements RMIService {
     public static void deserializeStorage() {
         try  {
             System.out.println("\n\nLoading Peer's content...");
-            String fileName = "../resources/peers/" + Peer.id + "/peerStorage.ser";
+            String fileName = "../../resources/peers/" + Peer.id + "/peerStorage.ser";
             File f = new File(fileName);
             if(!f.exists())
                 storage = new PeerStorage();
