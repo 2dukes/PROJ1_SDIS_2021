@@ -25,13 +25,14 @@ public class Removed extends MessageManager {
         if (Peer.id != this.senderId) {
             if (this.version.equals("2.0")) {
                 Peer.storage.removePeerBackingUp(this.fileId, this.senderId);
-                if(Peer.storage.getPeersBackingUp().get(this.fileId).size() == 0)
+                if (Peer.storage.getPeersBackingUp().contains(this.fileId) && Peer.storage.getPeersBackingUp().get(this.fileId).size() == 0)
                     Peer.storage.deleteFileToRemove(this.fileId);
             }
 
             peer.Chunk chunk = Peer.storage.getChunk(this.fileId, this.chunkNo);
             if (chunk == null)
                 return;
+
             String chunkKey = this.fileId + " " + this.chunkNo;
             Peer.storage.decrementChunkReplicationDeg(chunkKey);
             Peer.storage.deleteRemovedPutChunk(chunk.getKey());
