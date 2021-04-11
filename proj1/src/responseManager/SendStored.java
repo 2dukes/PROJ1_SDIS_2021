@@ -25,7 +25,7 @@ public class SendStored implements Runnable {
 
     @Override
     public void run() {
-        if (this.version.equals("2.0")) { // Backup Enhancement
+        if (Peer.version.equals("2.0")) { // Backup Enhancement
             if (Peer.storage.getNumberOfStoredChunks().containsKey(this.chunkKey)) {
                 if (Peer.storage.getNumberOfStoredChunks().get(this.chunkKey) >= this.desiredReplicationDeg)
                     return;
@@ -45,9 +45,9 @@ public class SendStored implements Runnable {
 
 
         System.out.format("SENT STORED version=%s senderId=%s fileId=%s chunkNo=%s \n",
-                this.version, Peer.id, this.fileId, this.chunkNo);
+                Peer.version, Peer.id, this.fileId, this.chunkNo);
 
-        String messageStr = this.version + " STORED " + Peer.id + " " + this.fileId + " "
+        String messageStr = Peer.version + " STORED " + Peer.id + " " + this.fileId + " "
                 + this.chunkNo + "\r\n\r\n";
 
         byte[] message = messageStr.getBytes();

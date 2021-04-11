@@ -42,7 +42,7 @@ public class PutChunk extends MessageManager {
 
                 System.out.format("RECEIVED PUTCHUNK version=%s senderId=%s fileId=%s chunkNo=%s replicationDeg=%s \n",
                         this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);
-                Peer.scheduledThreadPoolExecutor.schedule(new SendStored(this.version, this.fileId, this.chunkNo, this.replicationDeg, this.body),
+                Peer.scheduledThreadPoolExecutor.schedule(new SendStored(Peer.version, this.fileId, this.chunkNo, this.replicationDeg, this.body),
                         new Random().nextInt(401), TimeUnit.MILLISECONDS);
             }
 

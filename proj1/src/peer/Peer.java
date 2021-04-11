@@ -194,7 +194,7 @@ public class Peer implements RMIService {
             byte[] header = messageStr.getBytes();
 
             for (int i = 0; i < 5; i++) {
-                if (this.version.equals("2.0") && storage.getPeersBackingUp().containsKey(peerFile.getId()) && storage.getPeersBackingUp().get(peerFile.getId()).size() == 0)
+                if (Peer.version.equals("2.0") && storage.getPeersBackingUp().containsKey(peerFile.getId()) && storage.getPeersBackingUp().get(peerFile.getId()).size() == 0)
                     break;
                 else
                     System.out.println(messageStr);
@@ -235,7 +235,7 @@ public class Peer implements RMIService {
             scheduledThreadPoolExecutor.schedule(new manageThreads.GetChunk(message,
                     peerFile.getId(), chunkNo), 1, TimeUnit.SECONDS);
         }
-        if (this.version.equals("2.0"))
+        if (Peer.version.equals("2.0"))
             Thread.sleep(1000 + fileChunksSize * 60);
         else {
             if (fileChunksSize > 150)

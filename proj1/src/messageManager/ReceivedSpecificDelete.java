@@ -19,16 +19,16 @@ public class ReceivedSpecificDelete extends MessageManager {
     @Override
     public void run() {
         // <version> SPECIFIC_DELETE <senderId> <fileId> <peerId> <CRLF><CRLF>
-        if (Peer.id == this.peerId && this.version.equals("2.0")) {
+        if (Peer.id == this.peerId && Peer.version.equals("2.0")) {
             if (Peer.storage.deleteFileChunks(this.fileId)) {
                 System.out.format("RECEIVED SPECIFIC_DELETE version=%s senderId=%s fileId=%s peerId=%d\n",
                         this.version, this.senderId, this.fileId, this.peerId);
 
                 // Send Delete Response - Delete Enhancement
                 // <version> RECEIVED_DELETE <senderId> <fileId> <CRLF><CRLF>
-                Peer.scheduledThreadPoolExecutor.execute(new SendReceivedDelete(this.version, Peer.id, this.fileId));
+                Peer.scheduledThreadPoolExecutor.execute(new SendReceivedDelete(Peer.version, Peer.id, this.fileId));
                 System.out.format("SENT RECEIVED_DELETE version=%s senderId=%s fileId=%s\n",
-                        this.version, this.senderId, this.fileId);
+                        Peer.version, this.senderId, this.fileId);
             }
         }
 

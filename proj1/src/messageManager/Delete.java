@@ -21,12 +21,12 @@ public class Delete extends MessageManager {
                 System.out.format("RECEIVED DELETE version=%s senderId=%s fileId=%s\n",
                         this.version, this.senderId, this.fileId);
 
-                if (this.version.equals("2.0")) {
+                if (Peer.version.equals("2.0")) {
                     // Send Delete Response - Delete Enhancement
                     // <version> RECEIVED_DELETE <senderId> <fileId> <CRLF><CRLF>
-                    Peer.scheduledThreadPoolExecutor.execute(new SendReceivedDelete(this.version, Peer.id, this.fileId));
+                    Peer.scheduledThreadPoolExecutor.execute(new SendReceivedDelete(Peer.version, Peer.id, this.fileId));
                     System.out.format("SENT RECEIVED_DELETE version=%s senderId=%s fileId=%s\n",
-                            this.version, Peer.id, this.fileId);
+                            Peer.version, Peer.id, this.fileId);
                 }
 
 

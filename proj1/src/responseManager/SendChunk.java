@@ -43,7 +43,7 @@ public class SendChunk implements Runnable {
 
             byte[] message = outputStream.toByteArray();
 
-            if (this.version.equals("2.0")) {
+            if (Peer.version.equals("2.0")) {
                 // TCP connection with Initiator
 
                 Peer.semaphore.acquire();
@@ -63,7 +63,7 @@ public class SendChunk implements Runnable {
                 }
             }
 
-            if (this.version.equals("2.0")) // We don't send the CHUNK body
+            if (Peer.version.equals("2.0")) // We don't send the CHUNK body
                 Peer.mdrChannel.send(messageStr.getBytes());
             else
                 Peer.mdrChannel.send(message);

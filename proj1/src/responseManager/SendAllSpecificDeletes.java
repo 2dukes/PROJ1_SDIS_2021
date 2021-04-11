@@ -16,7 +16,7 @@ public class SendAllSpecificDeletes implements Runnable {
         for (String key : Peer.storage.getPeersBackingUp().keySet()) {
             for (int peerId : Peer.storage.getPeersBackingUp().get(key)) {
                 if (Peer.storage.getFilesToRemove().contains(key))
-                    Peer.scheduledThreadPoolExecutor.execute(new SendSpecificDelete(this.version, key, peerId));
+                    Peer.scheduledThreadPoolExecutor.execute(new SendSpecificDelete(Peer.version, key, peerId));
             }
         }
     }

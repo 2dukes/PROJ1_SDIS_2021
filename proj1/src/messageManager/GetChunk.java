@@ -30,7 +30,7 @@ public class GetChunk extends MessageManager {
             if (chunk == null)
                 return;
 
-            Peer.scheduledThreadPoolExecutor.schedule(new SendChunk(this.version, this.fileId,
+            Peer.scheduledThreadPoolExecutor.schedule(new SendChunk(Peer.version, this.fileId,
                     this.chunkNo, chunk.getData(), this.IP), new Random().nextInt(401), TimeUnit.MILLISECONDS);
         }
     }

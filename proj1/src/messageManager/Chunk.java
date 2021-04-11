@@ -21,7 +21,7 @@ public class Chunk extends MessageManager {
     public void run() {
         //System.out.println("Initial=" + this.chunkNo);
         if (Peer.id != this.senderId) {
-            if (this.version.equals("2.0") && desiredFileId != null && desiredFileId.equals(this.fileId)) // Restore Enhancement
+            if (Peer.version.equals("2.0") && desiredFileId != null && desiredFileId.equals(this.fileId)) // Restore Enhancement
                 return;
 
             if (!Peer.isInitiator) {
@@ -34,6 +34,7 @@ public class Chunk extends MessageManager {
                 return;
 
             peer.Chunk chunk = new peer.Chunk(this.fileId, this.chunkNo, this.body, 0);
+
 
             Peer.storage.addRestoredChunk(chunk);
 
