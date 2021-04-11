@@ -28,9 +28,8 @@ public class ReceiveChunkTCP extends MessageManager {
             int TCP_Port = Peer.storage.getFilePort(this.fileId);
             ServerSocket serverSocket = new ServerSocket(TCP_Port);
             int totalNumberOfFileChunks = Peer.storage.getPeerFile(this.fileId).getChunks().size();
-            int numberOfReceivedChunks = 0;
 
-            while (numberOfReceivedChunks < totalNumberOfFileChunks) {
+            while (Peer.storage.getNumberOfReceivedChunks() < totalNumberOfFileChunks) {
                 Socket clientSocket = serverSocket.accept();
                 // https://stackoverflow.com/questions/2878867/how-to-send-an-array-of-bytes-over-a-tcp-connection-java-programming
                 DataInputStream inBuf = new DataInputStream(clientSocket.getInputStream());
@@ -45,7 +44,7 @@ public class ReceiveChunkTCP extends MessageManager {
 
                 Chunk chunk = new Chunk(this.fileId, this.chunkNo, this.body, 0);
                 if (Peer.storage.addRestoredChunk(chunk))
-                    numberOfReceivedChunks++;
+                    Peer.storage.incrementNumberOfReceivedChunks();
 
                 // System.out.println("Received Message: " + new String(this.data));
 

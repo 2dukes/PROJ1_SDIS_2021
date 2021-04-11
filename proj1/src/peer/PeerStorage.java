@@ -33,6 +33,8 @@ public class PeerStorage implements Serializable {
     // File Id
     private Set<String> filesToRemove;
 
+    private int numberOfReceivedChunks = 0;
+
     public PeerStorage() {
         this.peerFiles = new ArrayList<>();
         this.restoredChunks = new ArrayList<>();
@@ -360,5 +362,17 @@ public class PeerStorage implements Serializable {
             return true;
         }
         return false;
+    }
+
+    public synchronized void incrementNumberOfReceivedChunks() {
+        this.numberOfReceivedChunks++;
+    }
+
+    public synchronized void setNumberOfReceivedChunks(int numberOfReceivedChunks) {
+        this.numberOfReceivedChunks = numberOfReceivedChunks;
+    }
+
+    public synchronized int getNumberOfReceivedChunks() {
+        return this.numberOfReceivedChunks;
     }
 }

@@ -221,6 +221,7 @@ public class Peer implements RMIService {
             Peer.storage.addFilePort(desiredFileId, port);
             scheduledThreadPoolExecutor.execute(new SendTCPPorts(version, desiredFileId, port));
             Thread.sleep(1000);
+            storage.setNumberOfReceivedChunks(0);
             scheduledThreadPoolExecutor.execute(new messageManager.ReceiveChunkTCP(desiredFileId));
         }
 
