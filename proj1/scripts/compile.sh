@@ -10,15 +10,6 @@
 
 javac -d build */*.java
 
-cd build
-
-# Start rmiregistry (port=1099) if not running yet
-rmi_pid=$(lsof -i:1099 | grep rmi | awk 'NR==1 {print $2}')
-if [ -z "$rmi_pid" ]
-then
-  $(rmiregistry) &
-fi
-
 
 # If you are using jar files, and these must be in some particular
 #  place under the build tree, you should copy/move those jar files.
