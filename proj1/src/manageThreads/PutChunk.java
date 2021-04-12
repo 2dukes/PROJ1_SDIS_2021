@@ -28,7 +28,7 @@ public class PutChunk implements Runnable {
 
         int currentReplicationDeg = chunk.getCurrentReplicationDegree();
         int desiredReplicationDeg = chunk.getDesiredReplicationDegree();
-        // System.out.println("Current RepDeg = " + currentReplicationDeg);
+
         if (currentReplicationDeg < desiredReplicationDeg && this.counter++ < 5) {
             this.time *= 2;
             Peer.mdbChannel.send(message);

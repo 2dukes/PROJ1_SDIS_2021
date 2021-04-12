@@ -306,7 +306,6 @@ public class Peer implements RMIService {
         }
 
         peerState += "\n\n\n------------------------------- General Information: -------------------------------\n\n\n";
-        System.out.println("CAPACITY: " + storage.getAvailableStorage());
         peerState += "Peer\'s Capacity: " + (double) storage.getAvailableStorage() / 1000 + " kB\n";
         peerState += "Peer\'s used Storage: " + (double) storage.getTotalStorage() / 1000 + " kB\n";
 

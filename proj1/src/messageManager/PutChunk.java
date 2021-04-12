@@ -30,8 +30,6 @@ public class PutChunk extends MessageManager {
                 this.version, this.senderId, this.fileId, this.chunkNo, this.replicationDeg);*/
 
         if (Peer.id != this.senderId) { // A peer can't send a chunk to itself
-            // if(Peer.storage.getChunkOccurrences().get(chunkOccurrencesKey) >= this.replicationDeg)
-            //    return;
             String value = this.fileId + " " + this.chunkNo;
             Peer.storage.addRemovedPutChunk(value);
 

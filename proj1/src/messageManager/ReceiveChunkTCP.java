@@ -46,8 +46,6 @@ public class ReceiveChunkTCP extends MessageManager {
                 if (Peer.storage.addRestoredChunk(chunk))
                     Peer.storage.incrementNumberOfReceivedChunks();
 
-                // System.out.println("Received Message: " + new String(this.data));
-
 
                 System.out.format("RECEIVED CHUNK [TCP] version=%s senderId=%s fileId=%s chunkNo=%s\n",
                         this.version, this.senderId, this.fileId, this.chunkNo);

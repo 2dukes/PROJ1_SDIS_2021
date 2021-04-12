@@ -19,11 +19,7 @@ public class Chunk extends MessageManager {
 
     @Override
     public void run() {
-        //System.out.println("Initial=" + this.chunkNo);
         if (Peer.id != this.senderId) {
-            //if (Peer.version.equals("2.0") && desiredFileId != null && desiredFileId.equals(this.fileId)) // Restore Enhancement
-            //    return;
-
             if(Peer.version.equals("2.0") && this.version.equals("2.0") && Peer.isInitiator)
                 return;
 
@@ -32,7 +28,6 @@ public class Chunk extends MessageManager {
                     return;
             }
 
-            //  System.out.println("Chunk=" + this.chunkNo);
             if (desiredFileId != null && !desiredFileId.equals(this.fileId) && Peer.isInitiator)
                 return;
 

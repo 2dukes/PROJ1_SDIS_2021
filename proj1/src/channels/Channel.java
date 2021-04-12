@@ -40,9 +40,6 @@ public abstract class Channel implements Runnable {
             MulticastSocket multicastSocket = new MulticastSocket(this.port);
             multicastSocket.joinGroup(this.destination);
 
-            // NetworkInterface netInterface = NetworkInterface.getByName("wlp2s0");
-            // SocketAddress sockAdr = new InetSocketAddress(this.IP, this.port);
-            //multicastSocket.joinGroup(sockAdr, netInterface);
             while (true) {
                 this.packet = new DatagramPacket(inbuf, inbuf.length);
                 multicastSocket.receive(this.packet);
@@ -52,8 +49,6 @@ public abstract class Channel implements Runnable {
                 System.arraycopy(this.packet.getData(), this.packet.getOffset(), data, 0, this.packet.getLength());
 
                 handleMessageType(data);
-
-                // Executors.newScheduledThreadPool(Macros.NUM_THREADS).execute(new MessageManagerBackup(packet.getData()));
             }
 
         } catch (IOException err) {
