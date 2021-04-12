@@ -317,7 +317,7 @@ public class PeerStorage implements Serializable {
             if (!this.filePorts.containsKey(fileId))
                 this.filePorts.put(fileId, port);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 

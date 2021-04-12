@@ -53,7 +53,7 @@ public class ReceiveChunkTCP extends MessageManager {
                         this.version, this.senderId, this.fileId, this.chunkNo);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 }

@@ -60,7 +60,6 @@ public class TestApp {
                 default -> throw new Exception("Wrong arguments [sub_protocol = " + subProtocol + "]");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println(e.getMessage());
         }
 
