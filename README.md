@@ -1,8 +1,8 @@
 # SDIS Project
 
-SDIS Project for group T&lt;n&gt;G&lt;p&gt;&lt;q&gt;.
+SDIS Project 1. A distributed backup system developed using Java.
 
 Group members:
 
-1. &lt;first name&gt; &lt;family name&gt; (&lt;email address&gt;)
-2. &lt;first name&gt; &lt;family name&gt; (&lt;email address&gt;)
+1. Rui Filipe Mendes Pinto (<up201806441@edu.fe.up.pt>)
+2. Tiago Gonçalves Gomes (<up201806658@edu.fe.up.pt>)
